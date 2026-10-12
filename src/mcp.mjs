@@ -6,6 +6,7 @@ import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkPerfectResult, MAX_CHARS } from "./check.mjs";
+import { suggestSpelling } from "./spell.mjs";
 import { FOCUS, NAME, TAGLINE, breathOnly, finish, start } from "./script.mjs";
 
 export const LATEST = "2025-11-25";
@@ -141,6 +142,31 @@ export const TOOLS = [
     annotations: READ_ONLY,
   },
   {
+    name: "suggest_spelling",
+    title: "Suggest spelling fixes",
+    description:
+      "Suggest spelling fixes for typed text. Never apply them without asking: show the corrected text and let the person choose. Names (capitalised mid-sentence) are left alone.",
+    inputSchema: {
+      type: "object",
+      properties: { text: { type: "string", maxLength: 2000 } },
+      required: ["text"],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        corrected: { type: "string" },
+        changed: { type: "boolean" },
+        fixes: {
+          type: "array",
+          items: { type: "object", properties: { from: { type: "string" }, to: { type: "string" } }, required: ["from", "to"] },
+        },
+      },
+      required: ["corrected", "changed", "fixes"],
+    },
+    annotations: READ_ONLY,
+  },
+  {
     name: "guided_breath",
     title: "Guided breath",
     description: "One to three slow guided breaths on their own: in for 4 seconds, hold for 2, a long slow release.",
@@ -191,6 +217,14 @@ function callTool(params) {
     case "check_perfect_result": {
       const result = { ...checkPerfectResult(args.text, args.country), maxChars: MAX_CHARS };
       return { content: [{ type: "text", text: result.message || "Looks good." }], structuredContent: result, isError: false };
+    }
+    case "suggest_spelling": {
+      const result = suggestSpelling(args.text);
+      return {
+        content: [{ type: "text", text: result.changed ? `Did you mean: ${result.corrected}` : "No spelling changes." }],
+        structuredContent: result,
+        isError: false,
+      };
     }
     case "guided_breath":
       return toolResult(breathOnly(args.breaths ?? 1));

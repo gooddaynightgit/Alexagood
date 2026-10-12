@@ -26,7 +26,7 @@ test("notifications get 202 with no body", () => {
 
 test("tools/list exposes the three tools", () => {
   const names = rpc(2, "tools/list").result.tools.map((t) => t.name);
-  assert.deepEqual(names, ["start_something_good", "finish_something_good", "check_perfect_result", "guided_breath"]);
+  assert.deepEqual(names, ["start_something_good", "finish_something_good", "check_perfect_result", "suggest_spelling", "guided_breath"]);
 });
 
 test("start returns ssml with real breaks and the question", () => {
