@@ -1,6 +1,6 @@
 ---
 name: something-good
-description: Guide someone, by voice, to name what they're not grateful for (a challenge, a situation, something missing, or something they want to change), breathe slowly, and hear "Thank you. Something good is about to happen with [their words]." Use when someone says they can't think of anything to be grateful for, is struggling, or asks for Something Good.
+description: Guide someone, by voice, to name what they're not grateful for (a challenge, a situation, something missing, or something they want to change), breathe slowly, turn it around into their perfect result, and hear "Thank you. [their perfect result]. Something good is about to happen." Use when someone says they can't think of anything to be grateful for, is struggling, or asks for Something Good.
 ---
 
 # Something Good
@@ -26,7 +26,7 @@ The `ssml` holds the timed silences and slow pace. Do not summarise it, shorten 
 
 - Keep the phrase **"not grateful for"**. It is the point.
 - Never say "together", "with me" about breathing. You guide; you don't breathe.
-- Never say the problem is solved, fixed or gone. Say "Something good is about to happen with …".
+- Never say the problem is solved, fixed or gone. Close with "Something good is about to happen."
 - Give their perfect result back in their own first-person words. Don't reword, soften or diagnose.
 - No advice, no reframing, no pep talk. Just the ritual.
 

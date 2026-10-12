@@ -4,7 +4,7 @@
 
 Some days it's hard to feel grateful. Something Good starts there. You tell Alexa what you're dealing with: a challenge, a situation, something missing, or something you want to change. Alexa guides one slow breath, then says your own words back to you:
 
-> "Thank you. Something good is about to happen with your money worries."
+> "Thank you. I am living in my own home. Something good is about to happen."
 
 It never pretends the problem is solved. It helps you hold it with a little more hope. About two minutes, voice only.
 
@@ -26,7 +26,7 @@ Built for the [Build, Ship, Shape Amazon Developer Hackathon](https://amazonappd
 | Tool | Input | Returns |
 |---|---|---|
 | `start_something_good` | optional `focus`: challenge, situation, missing, change, else | Welcome, one slow breath (in 4s, hold 2s, out 7s), then the question. |
-| `finish_something_good` | `named`: their words | "Thank you. Something good is about to happen with …" twice, then the close. |
+| `finish_something_good` | `named`: their perfect result | One line: "Thank you.", their perfect result in their own words, "Something good is about to happen." |
 | `guided_breath` | `breaths`: 1 to 3 | Just the breath. |
 
 Every tool returns `ssml` (speak it exactly), `text`, and `steps` (each line with its speaking rate and the silence after it, for custom voice front ends).
