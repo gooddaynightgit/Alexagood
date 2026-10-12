@@ -1,0 +1,81 @@
+import assert from "node:assert/strict";
+import { test } from "node:test";
+import { handleHttp, LATEST } from "../src/server.mjs";
+import { breath, finish, reflect, start, toSsml } from "../src/script.mjs";
+
+const post = (msg, headers = {}) =>
+  handleHttp({ method: "POST", headers: { "content-type": "application/json", accept: "application/json, text/event-stream", ...headers }, body: JSON.stringify(msg) }, {});
+const rpc = (id, method, params) => JSON.parse(post({ jsonrpc: "2.0", id, method, params }).body);
+
+test("initialize negotiates the latest protocol", () => {
+  const r = rpc(1, "initialize", { protocolVersion: LATEST, capabilities: {}, clientInfo: { name: "t", version: "1" } });
+  assert.equal(r.result.protocolVersion, "2025-11-25");
+  assert.ok(r.result.capabilities.tools);
+  assert.match(r.result.instructions, /not grateful/);
+});
+
+test("unknown protocol version from client falls back to latest", () => {
+  assert.equal(rpc(1, "initialize", { protocolVersion: "1999-01-01" }).result.protocolVersion, LATEST);
+});
+
+test("notifications get 202 with no body", () => {
+  const r = post({ jsonrpc: "2.0", method: "notifications/initialized" });
+  assert.equal(r.status, 202);
+  assert.equal(r.body, "");
+});
+
+test("tools/list exposes the three tools", () => {
+  const names = rpc(2, "tools/list").result.tools.map((t) => t.name);
+  assert.deepEqual(names, ["start_something_good", "finish_something_good", "guided_breath"]);
+});
+
+test("start returns ssml with real breaks and the question", () => {
+  const r = rpc(3, "tools/call", { name: "start_something_good", arguments: {} }).result;
+  assert.equal(r.isError, false);
+  assert.match(r.structuredContent.ssml, /^<speak>/);
+  assert.match(r.structuredContent.ssml, /<break time="4000ms"\/>/);
+  assert.match(r.structuredContent.ssml, /rate="x-slow">just let it go\./);
+  assert.match(r.content[0].text, /not grateful for/);
+  assert.doesNotMatch(r.content[0].text, /together/i);
+});
+
+test("finish reflects their words twice and never says solved", () => {
+  const r = rpc(4, "tools/call", { name: "finish_something_good", arguments: { named: "My money worries." } }).result;
+  const hits = r.content[0].text.match(/Something good is about to happen with your money worries\./g);
+  assert.equal(hits.length, 2);
+  assert.doesNotMatch(r.content[0].text, /solved|fixed|together/i);
+});
+
+test("finish without words asks gently instead", () => {
+  const r = rpc(5, "tools/call", { name: "finish_something_good", arguments: { named: "  " } }).result;
+  assert.equal(r.isError, true);
+});
+
+test("unknown method and bad JSON are JSON-RPC errors", () => {
+  assert.equal(rpc(6, "nope").error.code, -32601);
+  assert.equal(handleHttp({ method: "POST", headers: {}, body: "{" }, {}).status, 400);
+});
+
+test("GET is 405, unsupported version header is 400, foreign origin is 403", () => {
+  assert.equal(handleHttp({ method: "GET", headers: {} }, {}).status, 405);
+  assert.equal(post({ jsonrpc: "2.0", id: 1, method: "ping" }, { "mcp-protocol-version": "2000-01-01" }).status, 400);
+  assert.equal(post({ jsonrpc: "2.0", id: 1, method: "ping" }, { origin: "https://evil.example" }).status, 403);
+  const ok = post({ jsonrpc: "2.0", id: 1, method: "ping" }, { origin: "https://gooddaynight.com" });
+  assert.equal(ok.status, 200);
+  assert.equal(ok.headers["Access-Control-Allow-Origin"], "https://gooddaynight.com");
+});
+
+test("skill is served as a resource", () => {
+  const r = rpc(7, "resources/read", { uri: "skill://something-good/SKILL.md" });
+  assert.match(r.result.contents[0].text, /name: something-good/);
+});
+
+test("script details", () => {
+  assert.equal(reflect("losing my job"), "losing your job");
+  assert.equal(reflect("I'm lonely and my mum is ill"), "you're lonely and your mum is ill");
+  assert.equal(reflect("Nobody calls me"), "nobody calls you");
+  assert.equal(reflect(""), "what you named");
+  assert.equal(breath(2).filter((s) => s.phase === "in").length, 2);
+  assert.match(toSsml([{ text: "a & b", rate: "slow", pauseMs: 25000 }]), /a &amp; b.*10000ms.*10000ms.*5000ms/);
+  assert.ok(start().steps.length > 5 && finish("x").steps.length > 5);
+});
