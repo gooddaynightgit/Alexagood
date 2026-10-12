@@ -47,6 +47,7 @@ const sessionSchema = {
           rate: { type: "string", enum: ["medium", "slow", "x-slow"] },
           pauseMs: { type: "number" },
           phase: { type: "string", enum: ["in", "hold", "out"] },
+          group: { type: "string", enum: ["ask"], description: "Lines shown together with the answer box." },
         },
         required: ["text", "rate", "pauseMs"],
       },

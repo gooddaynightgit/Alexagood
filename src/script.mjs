@@ -14,6 +14,8 @@ export const BREATH_MS = { in: 4000, hold: 2000, out: 7000 };
 const RATE = { normal: "medium", slow: "slow", verySlow: "x-slow" };
 
 const line = (text, rate = RATE.slow, pauseMs = 700, phase) => ({ text, rate, pauseMs, ...(phase ? { phase } : {}) });
+/** Lines that belong on the same screen as the answer box. */
+const ask = (text, pauseMs) => ({ ...line(text, RATE.slow, pauseMs), group: "ask" });
 
 export const OPENING = [
   line("Welcome to Something Good. This is the place to name what you're not grateful for.", RATE.normal, 1200),
@@ -58,7 +60,7 @@ const NAMING = {
   },
 };
 
-export const PERFECT_RESULT = "My perfect result:";
+export const PERFECT_RESULT = "Your perfect result:";
 
 export const CLOSE = "It's going to be alright. All is well. Something good is about to happen.";
 
@@ -66,11 +68,10 @@ export const CLOSE = "It's going to be alright. All is well. Something good is a
 export function question(focus) {
   const n = NAMING[focus] ?? NAMING.else;
   return [
-    line("Take your time.", RATE.slow, 2500),
-    line(n.consider, RATE.slow, 4000),
-    line(n.turn, RATE.slow, 3000),
-    line("What would you like it to be?", RATE.slow, 2500),
-    line(PERFECT_RESULT, RATE.slow, 0),
+    ask("Take your time.", 2500),
+    ask(n.consider, 4000),
+    ask(`${n.turn} What would you like it to be?`, 2500),
+    ask(PERFECT_RESULT, 0),
   ];
 }
 
