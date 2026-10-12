@@ -128,7 +128,8 @@ export function finish(named) {
   const text = result
     ? `Thank you. ${result} Something good is about to happen.`
     : "Thank you. Something good is about to happen.";
-  return pack([line(text, RATE.slow, 0)]);
+  // The card shows everything; Alexa says only "Thank you." … "Something good is about to happen."
+  return pack([{ ...line(text, RATE.slow, 0), speak: ["Thank you.", "Something good is about to happen."], speakPauseMs: 2500 }]);
 }
 
 export function breathOnly(count) {
@@ -152,9 +153,17 @@ function breaks(ms) {
   return out.join("");
 }
 
+const prosody = (rate, text) => `<prosody rate="${rate}">${escapeXml(text.replace(/…/g, "..."))}</prosody>`;
+
+/** A step may show more than it says: `speak` lists the parts to say aloud, with `speakPauseMs` between them. */
 export function toSsml(steps) {
   const body = steps
-    .map((s) => `<prosody rate="${s.rate}">${escapeXml(s.text.replace(/…/g, "..."))}</prosody>${breaks(s.pauseMs)}`)
+    .map((s) => {
+      const spoken = Array.isArray(s.speak)
+        ? s.speak.map((part) => prosody(s.rate, part)).join(breaks(s.speakPauseMs ?? 1500))
+        : prosody(s.rate, s.text);
+      return `${spoken}${breaks(s.pauseMs)}`;
+    })
     .join(" ");
   return `<speak>${body}</speak>`;
 }

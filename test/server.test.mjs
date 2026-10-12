@@ -56,6 +56,8 @@ test("finish is one card: thank you, their perfect result in their words, someth
     arguments: { named: "i am happy and grateful i'm living in my own home\nI have the money to travel" },
   }).result;
   assert.equal(r.structuredContent.steps.length, 1);
+  assert.match(r.structuredContent.ssml, /Thank you\.<\/prosody><break time="2500ms"\/><prosody rate="slow">Something good is about to happen\.<\/prosody>/);
+  assert.doesNotMatch(r.structuredContent.ssml, /living in my own home/);
   assert.equal(
     r.content[0].text,
     "Thank you. I am happy and grateful I'm living in my own home. I have the money to travel. Something good is about to happen.",

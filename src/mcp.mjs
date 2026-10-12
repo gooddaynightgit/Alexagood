@@ -48,6 +48,12 @@ const sessionSchema = {
           pauseMs: { type: "number" },
           phase: { type: "string", enum: ["in", "hold", "out"] },
           group: { type: "string", enum: ["ask"], description: "Lines shown together with the answer box." },
+          speak: {
+            type: "array",
+            items: { type: "string" },
+            description: "When present, say only these parts aloud (the card still shows `text`).",
+          },
+          speakPauseMs: { type: "number", description: "Silence between the `speak` parts." },
         },
         required: ["text", "rate", "pauseMs"],
       },
@@ -83,7 +89,7 @@ export const TOOLS = [
     name: "finish_something_good",
     title: "Finish Something Good",
     description:
-      "After the person has said their perfect result, pass their words here. Returns one closing line: 'Thank you.', their perfect result in their own first-person words, then 'Something good is about to happen.' Speak the returned ssml.",
+      "After the person has said their perfect result, pass their words here. Returns one closing card showing 'Thank you.', their perfect result in their own first-person words, and 'Something good is about to happen.' Aloud, only 'Thank you.' … 'Something good is about to happen.' is said. Speak the returned ssml.",
     inputSchema: {
       type: "object",
       properties: {
