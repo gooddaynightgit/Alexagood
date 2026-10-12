@@ -5,6 +5,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { checkPerfectResult, MAX_CHARS } from "./check.mjs";
 import { FOCUS, NAME, TAGLINE, breathOnly, finish, start } from "./script.mjs";
 
 export const LATEST = "2025-11-25";
@@ -106,6 +107,29 @@ export const TOOLS = [
     annotations: READ_ONLY,
   },
   {
+    name: "check_perfect_result",
+    title: "Check their perfect result",
+    description:
+      "Check what the person said or typed as their perfect result before finishing. status: ok (carry on), nudge (allowed, but gently suggest saying what they do want), block (ask them gently to change it; message says how), crisis (stop the ritual and share the message, which offers real support). finish_something_good refuses block and crisis.",
+    inputSchema: {
+      type: "object",
+      properties: { text: { type: "string", maxLength: 2000 } },
+      required: ["text"],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        status: { type: "string", enum: ["ok", "nudge", "block", "crisis"] },
+        ok: { type: "boolean", description: "True when they may finish (ok or nudge)." },
+        message: { type: "string", description: "What to show or say. Empty when ok." },
+        maxChars: { type: "number" },
+      },
+      required: ["status", "ok", "message", "maxChars"],
+    },
+    annotations: READ_ONLY,
+  },
+  {
     name: "guided_breath",
     title: "Guided breath",
     description: "One to three slow guided breaths on their own: in for 4 seconds, hold for 2, a long slow release.",
@@ -149,7 +173,13 @@ function callTool(params) {
           isError: true,
         };
       }
+      const check = checkPerfectResult(args.named);
+      if (!check.ok) return { content: [{ type: "text", text: check.message }], structuredContent: check, isError: true };
       return toolResult(finish(args.named));
+    }
+    case "check_perfect_result": {
+      const result = { ...checkPerfectResult(args.text), maxChars: MAX_CHARS };
+      return { content: [{ type: "text", text: result.message || "Looks good." }], structuredContent: result, isError: false };
     }
     case "guided_breath":
       return toolResult(breathOnly(args.breaths ?? 1));

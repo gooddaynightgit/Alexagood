@@ -11,7 +11,8 @@ A short voice ritual. The person names what they're **not** grateful for after o
 
 1. `start_something_good` — optional `focus`: `challenge`, `situation`, `missing`, `change` or `else`, if they've said which. Speak the returned `ssml` **exactly**, then listen.
 2. `finish_something_good` — `named`: their perfect result, exactly as they said it, in the first person ("I am living in my own home"). Don't reword it. Speak the returned `ssml` **exactly**.
-3. `guided_breath` — `breaths` 1–3, if they ask to just breathe.
+3. `check_perfect_result` — `text`: what they said. Call it before finishing. `ok`: carry on. `nudge`: say the message gently, then carry on if they're happy. `block`: say the message and let them try again. `crisis`: stop the ritual and say the message (it offers real support).
+4. `guided_breath` — `breaths` 1–3, if they ask to just breathe.
 
 The `ssml` holds the timed silences and slow pace. Do not summarise it, shorten it or add to it.
 

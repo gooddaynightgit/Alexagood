@@ -26,7 +26,7 @@ test("notifications get 202 with no body", () => {
 
 test("tools/list exposes the three tools", () => {
   const names = rpc(2, "tools/list").result.tools.map((t) => t.name);
-  assert.deepEqual(names, ["start_something_good", "finish_something_good", "guided_breath"]);
+  assert.deepEqual(names, ["start_something_good", "finish_something_good", "check_perfect_result", "guided_breath"]);
 });
 
 test("start returns ssml with real breaks and the question", () => {
@@ -99,4 +99,12 @@ test("script details", () => {
   assert.equal(finish("x").steps.length, 1);
   assert.doesNotMatch(start().text, /Let's start with one slow/);
   assert.doesNotMatch(finish("x").text, /cup of tea|Breathe in/);
+});
+
+test("check tool and finish refuse blocked text", () => {
+  const chk = rpc(20, "tools/call", { name: "check_perfect_result", arguments: { text: "asdfgh" } }).result;
+  assert.equal(chk.structuredContent.status, "block");
+  const fin = rpc(21, "tools/call", { name: "finish_something_good", arguments: { named: "I want to die" } }).result;
+  assert.equal(fin.isError, true);
+  assert.match(fin.content[0].text, /0800 567 567/);
 });

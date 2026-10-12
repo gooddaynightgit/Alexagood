@@ -15,6 +15,7 @@ Built for the [Build, Ship, Shape Amazon Developer Hackathon](https://amazonappd
 | Path | What it is |
 |---|---|
 | `src/mcp.mjs` | MCP server, Streamable HTTP transport, spec `2025-11-25`. Stateless, no dependencies. |
+| `src/check.mjs` | Rules for the perfect result (shared by Alexa and the web page). |
 | `src/script.mjs` | The words, pace and pauses. Builds SSML with real timed breaks for Alexa. |
 | `src/lambda.mjs` | AWS Lambda entry point (Function URL). |
 | `api/mcp.mjs` | Vercel entry point; the live endpoint is `/mcp`. |
@@ -27,6 +28,7 @@ Built for the [Build, Ship, Shape Amazon Developer Hackathon](https://amazonappd
 |---|---|---|
 | `start_something_good` | optional `focus`: challenge, situation, missing, change, else | Welcome, one slow breath (in 4s, hold 2s, out 7s), then the question. |
 | `finish_something_good` | `named`: their perfect result | One line: "Thank you.", their perfect result in their own words, "Something good is about to happen." |
+| `check_perfect_result` | `text` | ok / nudge / block / crisis, with a gentle message. Blocks swearing, junk, personal details, too short or long; nudges negative wording; crisis words get the SADAG helpline. |
 | `guided_breath` | `breaths`: 1 to 3 | Just the breath. |
 
 Every tool returns `ssml` (speak it exactly), `text`, and `steps` (each line with its speaking rate and the silence after it, for custom voice front ends).

@@ -1,0 +1,107 @@
+// Rules for "Your perfect result". Shared by Alexa and the web page through the MCP server.
+//
+// status:
+//   ok     - fine, carry on
+//   nudge  - allowed, with a gentle suggestion (negative wording)
+//   block  - must be changed before finishing (empty, too short/long, junk, swearing, personal details)
+//   crisis - stop the ritual and offer real support
+
+export const MIN_WORDS = 3;
+export const MAX_CHARS = 300;
+export const NUDGE = "Gently nudging you to correct the text.";
+
+export const CRISIS_MESSAGE =
+  "It sounds like you're carrying something very heavy right now, and you deserve real support. " +
+  "In South Africa you can call the SADAG Suicide Crisis Helpline, free, 24 hours a day: 0800 567 567. " +
+  "If you're somewhere else, please call your local emergency number, or reach out to someone you trust.";
+
+const CRISIS = [
+  /\bsuicid/i,
+  /\bkill(ing)?\s+(myself|me)\b/i,
+  /\b(hurt|harm|cut)(ing)?\s+myself\b/i,
+  /\bself[\s-]?harm/i,
+  /\bwant(ed)?\s+to\s+die\b/i,
+  /\b(end|ending)\s+(it\s+all|my\s+life)\b/i,
+  /\bno\s+reason\s+to\s+live\b/i,
+  /\b(don'?t|do\s+not)\s+want\s+to\s+(live|be\s+alive|be\s+here|wake\s+up)\b/i,
+  /\bbetter\s+off\s+dead\b/i,
+];
+
+// Swearing and abuse (English and common South African words), matched as whole words.
+const PROFANITY = [
+  /\bf+u+c+k\w*/i,
+  /\bmotherf\w*/i,
+  /\bsh[i1]t\w*/i,
+  /\bbullsh[i1]t\b/i,
+  /\bb[i1]tch\w*/i,
+  /\bbastard\w*/i,
+  /\ba(ss|rse)hole\w*/i,
+  /\bcunt\w*/i,
+  /\bdick(head)?s?\b/i,
+  /\bpiss(ed)?\b/i,
+  /\bslut\w*/i,
+  /\bwhore\w*/i,
+  /\bwank\w*/i,
+  /\btwat\w*/i,
+  /\bprick\b/i,
+  /\bkak\b/i,
+  /\bpoes\b/i,
+  /\bdoos\b/i,
+  /\bmoer\b/i,
+  /\bnigg\w*/i,
+  /\bkaffir\w*/i,
+  /\bretard\w*/i,
+];
+
+// Words that usually mean "what I don't want". Only nudges; never blocks.
+const NEGATIVE = [
+  /\b(don'?t|do\s+not|can'?t|cannot|won'?t|wouldn'?t|never|no\s+longer|not)\b/i,
+  /\b(hate|stop|quit|lose|losing|lost)\b/i,
+  /\b(broke|debt|debts|sick|ill|lonely|alone|fail\w*|poor|pain|scared|afraid|worried|worry|anxious|sad|depressed|angry|stress\w*)\b/i,
+];
+// ...unless it's said as freedom from it: "free of debt", "debt-free", "no more pain".
+const POSITIVE_FRAME = /\b(free\s+(of|from)|debt[\s-]free|no\s+more|out\s+of|healed\s+from|recovered\s+from)\b/i;
+
+const KEYBOARD_RUNS = /(qwert|asdf|zxcv|hjkl|uiop|wasd|jkl;|yuio)/i;
+
+function issue(status, hint) {
+  if (status === "crisis") return { status, ok: false, message: CRISIS_MESSAGE };
+  return { status, ok: status !== "block", message: `${NUDGE} ${hint}` };
+}
+
+export function checkPerfectResult(raw) {
+  const text = String(raw ?? "").trim();
+
+  if (!text) return issue("block", "Please type or say your perfect result.");
+  if (CRISIS.some((re) => re.test(text))) return issue("crisis");
+  if (text.length > MAX_CHARS) {
+    return issue("block", `Please keep it to ${MAX_CHARS} characters or fewer (you have ${text.length}).`);
+  }
+  if (/https?:\/\/|www\.|\.(com|co\.za|net|org)\b/i.test(text)) return issue("block", "Please leave out links.");
+  if (/[^\s@]+@[^\s@]+\.[^\s@]+/.test(text)) return issue("block", "Please leave out email addresses.");
+  if (/\d[\d\s-]{8,}\d/.test(text)) return issue("block", "Please leave out phone, ID and account numbers.");
+  if (PROFANITY.some((re) => re.test(text))) {
+    return issue("block", "Please use kind words. Your perfect result deserves them.");
+  }
+
+  const words = text.split(/\s+/).filter((w) => /\p{L}/u.test(w));
+  const letters = (text.match(/\p{L}/gu) ?? []).length;
+  const visible = text.replace(/\s/g, "").length;
+  const vowelless = words.filter((w) => w.length > 4 && !/[aeiouy]/i.test(w)).length;
+  const junk =
+    letters / Math.max(1, visible) < 0.6 ||
+    /(.)\1{4,}/.test(text) ||
+    KEYBOARD_RUNS.test(text) ||
+    vowelless > Math.max(1, words.length / 3);
+  if (junk) return issue("block", "That doesn't look like words yet. Try something like \"I have my own home\".");
+
+  if (words.length < MIN_WORDS) {
+    return issue("block", "Please add a few more words, like \"I have my own home\".");
+  }
+
+  if (NEGATIVE.some((re) => re.test(text)) && !POSITIVE_FRAME.test(text)) {
+    return issue("nudge", "Try saying what you do want, as if it's already true, like \"I have enough money\".");
+  }
+
+  return { status: "ok", ok: true, message: "" };
+}
