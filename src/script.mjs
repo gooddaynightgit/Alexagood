@@ -21,8 +21,7 @@ export const OPENING = [
 
 export function breath(count = 1) {
   const n = Math.min(3, Math.max(1, Math.round(Number(count) || 1)));
-  const intro = n === 1 ? "Let's start with one slow, deep breath." : `Let's take ${n === 2 ? "two" : "three"} more slow breaths.`;
-  const steps = [line(intro, RATE.slow, 1200)];
+  const steps = [];
   for (let i = 0; i < n; i += 1) {
     steps.push(line("Breathe in slowly…", RATE.slow, BREATH_MS.in, "in"));
     steps.push(line("Hold it gently…", RATE.slow, BREATH_MS.hold, "hold"));
@@ -39,12 +38,6 @@ export const QUESTION = [
     RATE.slow,
     0,
   ),
-];
-
-export const BASICS = [
-  "First, something simple. A cup of tea, or a warm bed tonight. Thank you for that.",
-  "Now a person. Someone who smiled at you, or called. Thank you for them.",
-  "And one more. A meal, clean water, being alive today. Thank you for that.",
 ];
 
 export const CLOSE = "It's going to be alright. All is well. Something good is about to happen.";
@@ -82,12 +75,10 @@ export function start() {
   return pack([...OPENING, ...breath(1), ...QUESTION]);
 }
 
-/** Second half, once they've named it: three simple thank-yous, two breaths, their thank-you twice, close. */
+/** Second half, once they've named it: their thank-you twice, then the close. */
 export function finish(named) {
   const ty = thankYou(named);
   return pack([
-    ...BASICS.map((t) => line(t, RATE.slow, 2500)),
-    ...breath(2),
     line(ty, RATE.slow, 2000),
     line("Say it with me.", RATE.slow, 1000),
     line(ty, RATE.slow, 2500),

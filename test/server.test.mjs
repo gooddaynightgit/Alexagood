@@ -77,5 +77,8 @@ test("script details", () => {
   assert.equal(reflect(""), "what you named");
   assert.equal(breath(2).filter((s) => s.phase === "in").length, 2);
   assert.match(toSsml([{ text: "a & b", rate: "slow", pauseMs: 25000 }]), /a &amp; b.*10000ms.*10000ms.*5000ms/);
-  assert.ok(start().steps.length > 5 && finish("x").steps.length > 5);
+  assert.ok(start().steps.length > 5);
+  assert.equal(finish("x").steps.length, 4);
+  assert.doesNotMatch(start().text, /Let's start with one slow/);
+  assert.doesNotMatch(finish("x").text, /cup of tea|Breathe in/);
 });

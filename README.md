@@ -2,7 +2,7 @@
 
 **Name what you're not grateful for.**
 
-Some days it's hard to feel grateful. Something Good starts there. You tell Alexa what you're dealing with: a challenge, a situation, something missing, or something you want to change. Alexa guides one slow breath, three simple thank-yous and two more slow breaths, then says your own words back to you:
+Some days it's hard to feel grateful. Something Good starts there. You tell Alexa what you're dealing with: a challenge, a situation, something missing, or something you want to change. Alexa guides one slow breath, then says your own words back to you:
 
 > "Thank you. Something good is about to happen with your money worries."
 
@@ -26,7 +26,7 @@ Built for the [Build, Ship, Shape Amazon Developer Hackathon](https://amazonappd
 | Tool | Input | Returns |
 |---|---|---|
 | `start_something_good` | none | Welcome, one slow breath (in 4s, hold 2s, out 7s), then the question. |
-| `finish_something_good` | `named`: their words | Three thank-yous, two slow breaths, "Thank you. Something good is about to happen with …" twice, the close. |
+| `finish_something_good` | `named`: their words | "Thank you. Something good is about to happen with …" twice, then the close. |
 | `guided_breath` | `breaths`: 1 to 3 | Just the breath. |
 
 Every tool returns `ssml` (speak it exactly), `text`, and `steps` (each line with its speaking rate and the silence after it, for custom voice front ends).

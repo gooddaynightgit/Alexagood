@@ -5,7 +5,7 @@ description: Guide someone, by voice, to name what they're not grateful for (a c
 
 # Something Good
 
-A two-minute voice ritual. The person names what they're **not** grateful for. You guide one slow breath, three simple thank-yous, two more slow breaths, then give thanks for their situation as if something good is already on its way. It never pretends the problem is solved.
+A short voice ritual. The person names what they're **not** grateful for after one slow guided breath, then you give thanks for their situation as if something good is already on its way. It never pretends the problem is solved.
 
 ## Tools (MCP server `something-good`)
 
@@ -43,9 +43,7 @@ If they mention wanting to harm themselves or not wanting to be alive, stop the 
 If the tools are unavailable, say this, slowly, with real pauses:
 
 1. "Welcome to Something Good. This is the place to name what you're not grateful for."
-2. "Let's start with one slow, deep breath." — "Breathe in slowly…" (4s) — "Hold it gently…" (2s) — "Slowly release… just let it go." (7s)
+2. "Breathe in slowly…" (4s) — "Hold it gently…" (2s) — "Slowly release… just let it go." (7s)
 3. "Take your time. There's no rush. Right at this moment, tell me: what challenge or situation are you dealing with? Or is there something you'd like to change, or something missing in your life?" — listen.
-4. "First, something simple. A cup of tea, or a warm bed tonight. Thank you for that." / "Now a person. Someone who smiled at you, or called. Thank you for them." / "And one more. A meal, clean water, being alive today. Thank you for that."
-5. "Let's take two more slow breaths." — the same breath, twice.
-6. "Thank you. Something good is about to happen with [their words]." — "Say it with me." — say it again.
-7. "It's going to be alright. All is well. Something good is about to happen."
+4. "Thank you. Something good is about to happen with [their words]." — "Say it with me." — say it again.
+5. "It's going to be alright. All is well. Something good is about to happen."

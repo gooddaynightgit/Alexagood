@@ -71,7 +71,7 @@ export const TOOLS = [
     name: "finish_something_good",
     title: "Finish Something Good",
     description:
-      "After the person has named what they're not grateful for, pass their words here. Returns three simple thank-yous, two slow breaths, 'Thank you. Something good is about to happen with …' in their own words (twice), and the close. Speak the returned ssml.",
+      "After the person has named what they're not grateful for, pass their words here. Returns 'Thank you. Something good is about to happen with …' in their own words (twice), and the close. Speak the returned ssml.",
     inputSchema: {
       type: "object",
       properties: {
