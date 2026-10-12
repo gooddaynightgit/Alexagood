@@ -34,20 +34,45 @@ export function breath(count = 1) {
 /** What they chose to name. "else" (or nothing) asks the open question. */
 export const FOCUS = ["challenge", "situation", "missing", "change", "else"];
 
-const QUESTIONS = {
-  challenge: "Right at this moment, tell me: what challenge are you dealing with?",
-  situation: "Right at this moment, tell me: what situation are you dealing with?",
-  missing: "Right at this moment, tell me: what feels missing in your life?",
-  change: "Right at this moment, tell me: what would you like to change?",
-  else: "Right at this moment, tell me: what challenge or situation are you dealing with? Or is there something you'd like to change, or something missing in your life?",
+/** "Consider…" and "turn it around" lines, shaped by what they chose. */
+const NAMING = {
+  challenge: {
+    consider: "Consider what is the challenge that you are not grateful for in your life.",
+    turn: "Right now, at this moment in time, change your challenge. Turn it around.",
+  },
+  situation: {
+    consider: "Consider what is the situation that you are not grateful for in your life.",
+    turn: "Right now, at this moment in time, change your situation. Turn it around.",
+  },
+  missing: {
+    consider: "Consider what is missing in your life, that you are not grateful for.",
+    turn: "Right now, at this moment in time, change what is missing. Turn it around.",
+  },
+  change: {
+    consider: "Consider what you want to change, that you are not grateful for in your life.",
+    turn: "Right now, at this moment in time, change it. Turn it around.",
+  },
+  else: {
+    consider: "Consider what it is that you are not grateful for in your life.",
+    turn: "Right now, at this moment in time, change it. Turn it around.",
+  },
 };
 
-export function question(focus) {
-  const text = QUESTIONS[focus] ?? QUESTIONS.else;
-  return [line("Take your time. There's no rush.", RATE.slow, 1500), line(text, RATE.slow, 0)];
-}
+export const PERFECT_RESULT = "My perfect result:";
 
 export const CLOSE = "It's going to be alright. All is well. Something good is about to happen.";
+
+/** Take your time, name it, turn it around, then say the perfect result. Alexa then listens. */
+export function question(focus) {
+  const n = NAMING[focus] ?? NAMING.else;
+  return [
+    line("Take your time.", RATE.slow, 2500),
+    line(n.consider, RATE.slow, 4000),
+    line(n.turn, RATE.slow, 3000),
+    line("What would you like it to be?", RATE.slow, 2500),
+    line(PERFECT_RESULT, RATE.slow, 0),
+  ];
+}
 
 /** Their words, turned to face them: "my money worries" -> "your money worries". Never claims it is solved. */
 export function reflect(raw) {

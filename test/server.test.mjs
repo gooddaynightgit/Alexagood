@@ -41,9 +41,12 @@ test("start returns ssml with real breaks and the question", () => {
 
 test("start asks the question for what they chose", () => {
   const r = rpc(8, "tools/call", { name: "start_something_good", arguments: { focus: "missing" } }).result;
-  assert.match(r.content[0].text, /what feels missing in your life\?$/);
+  assert.match(r.content[0].text, /Consider what is missing in your life, that you are not grateful for\./);
+  assert.match(r.content[0].text, /change what is missing\. Turn it around\./);
+  assert.match(r.content[0].text, /What would you like it to be\?\nMy perfect result:$/);
   const open = rpc(9, "tools/call", { name: "start_something_good", arguments: { focus: "nonsense" } }).result;
-  assert.match(open.content[0].text, /something missing in your life\?$/);
+  assert.match(open.content[0].text, /Consider what it is that you are not grateful for/);
+  assert.doesNotMatch(open.content[0].text, /no rush/);
 });
 
 test("finish reflects their words twice and never says solved", () => {

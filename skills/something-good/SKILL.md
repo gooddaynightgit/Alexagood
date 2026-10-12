@@ -44,6 +44,6 @@ If the tools are unavailable, say this, slowly, with real pauses:
 
 1. "Welcome to Something Good. This is the place to name what you're not grateful for."
 2. "Breathe in slowly…" (4s) — "Hold it gently…" (2s) — "Slowly release… just let it go." (7s)
-3. "Take your time. There's no rush. Right at this moment, tell me: what challenge or situation are you dealing with? Or is there something you'd like to change, or something missing in your life?" — listen.
+3. "Take your time." — "Consider what is the challenge that you are not grateful for in your life." — "Right now, at this moment in time, change your challenge. Turn it around." — "What would you like it to be?" — "My perfect result:" — listen. (Say "situation", "what is missing", or "it" in place of "challenge" to match what they chose.)
 4. "Thank you. Something good is about to happen with [their words]." — "Say it with me." — say it again.
 5. "It's going to be alright. All is well. Something good is about to happen."
