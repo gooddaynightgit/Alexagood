@@ -188,8 +188,8 @@ function allowedOrigin(origin, env = process.env) {
   const list = (env.ALLOWED_ORIGINS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const allowed = list.length ? list : DEFAULT_ORIGINS;
   if (allowed.includes(origin)) return true;
-  // GoodDayNight preview deployments on Vercel
-  return /^https:\/\/[a-z0-9-]+-gooddaynightgit\.vercel\.app$/.test(origin);
+  // This server's own pages, and GoodDayNight preview deployments on Vercel
+  return /^https:\/\/(alexagood[a-z0-9-]*|[a-z0-9-]+-gooddaynightgit)\.vercel\.app$/.test(origin);
 }
 
 const lower = (headers = {}) => Object.fromEntries(Object.entries(headers).map(([k, v]) => [k.toLowerCase(), v]));

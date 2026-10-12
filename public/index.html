@@ -10,6 +10,8 @@
   h1 { font-size: 2.2rem; line-height: 1.1; margin: 0 0 1rem; }
   code { background: #d4ff00; padding: 0.1rem 0.35rem; border-radius: 0.3rem; }
   a { color: #16324a; }
+  button { font: inherit; font-weight: 800; padding: 0.8rem 1.3rem; border-radius: 999px; border: 0; background: #16324a; color: #d4ff00; cursor: pointer; }
+  pre { white-space: pre-wrap; font: inherit; line-height: 1.5; }
 </style>
 </head>
 <body>
@@ -17,7 +19,35 @@
   <h1>Name what you're not grateful for</h1>
   <p>This is the Something Good MCP server for Alexa+. The MCP endpoint is <code>/mcp</code> (Streamable HTTP, spec 2025-11-25).</p>
   <p>Source and Agent Skill: <a href="https://github.com/gooddaynightgit/Alexagood">github.com/gooddaynightgit/Alexagood</a></p>
+  <p><button id="test" type="button">Test the server</button></p>
+  <pre id="out" aria-live="polite"></pre>
   <p>Something good is about to happen.</p>
 </main>
+<script>
+  const out = document.getElementById("out");
+  const call = async (id, method, params) => {
+    const r = await fetch("/mcp", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json, text/event-stream", "MCP-Protocol-Version": "2025-11-25" },
+      body: JSON.stringify({ jsonrpc: "2.0", id, method, params }),
+    });
+    if (!r.ok) throw new Error("HTTP " + r.status);
+    return r.json();
+  };
+  document.getElementById("test").addEventListener("click", async () => {
+    out.textContent = "Calling…";
+    try {
+      const init = await call(1, "initialize", { protocolVersion: "2025-11-25", capabilities: {}, clientInfo: { name: "test-page", version: "1" } });
+      const tools = await call(2, "tools/list");
+      const fin = await call(3, "tools/call", { name: "finish_something_good", arguments: { named: "my money worries" } });
+      out.textContent =
+        "✅ Server is working (MCP " + init.result.protocolVersion + ")\n" +
+        "Tools: " + tools.result.tools.map((t) => t.name).join(", ") + "\n\n" +
+        "Sample, for “my money worries”:\n\n" + fin.result.content[0].text;
+    } catch (e) {
+      out.textContent = "❌ " + e.message;
+    }
+  });
+</script>
 </body>
 </html>
