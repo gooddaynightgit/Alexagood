@@ -83,13 +83,13 @@ export const TOOLS = [
     name: "finish_something_good",
     title: "Finish Something Good",
     description:
-      "After the person has named what they're not grateful for, pass their words here. Returns 'Thank you. Something good is about to happen with …' in their own words (twice), and the close. Speak the returned ssml.",
+      "After the person has said their perfect result, pass their words here. Returns one closing line: 'Thank you.', their perfect result in their own first-person words, then 'Something good is about to happen.' Speak the returned ssml.",
     inputSchema: {
       type: "object",
       properties: {
         named: {
           type: "string",
-          description: "What the person named, in their own words, as a short phrase, e.g. 'my money worries' or 'losing my job'. Do not soften or reinterpret it.",
+          description: "Their perfect result in their own first-person words, e.g. 'I am living in my own home. I have the money to travel.' Do not reword it.",
           maxLength: 500,
         },
       },

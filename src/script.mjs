@@ -108,15 +108,27 @@ export function start(focus) {
   return pack([...OPENING, ...breath(1), ...question(focus)]);
 }
 
-/** Second half, once they've named it: their thank-you twice, then the close. */
+/**
+ * Their perfect result, kept in their own first-person words, tidied into sentences:
+ * "i am happy and grateful i'm living in my own home" -> "I am happy and grateful I'm living in my own home."
+ */
+export function affirm(raw) {
+  const sentences = String(raw ?? "")
+    .split(/\n+/)
+    .map((t) => t.trim().replace(/\s+/g, " ").replace(/…+$/, "").replace(/[.!?,;:]+$/, ""))
+    .filter(Boolean)
+    .map((t) => t.replace(/\bi\b/g, "I").replace(/\bi('m|'ve|'ll|'d)\b/g, "I$1"))
+    .map((t) => `${t[0].toUpperCase()}${t.slice(1)}.`);
+  return sentences.join(" ").slice(0, 600);
+}
+
+/** Second half: one card. Thank you, their perfect result in their own words, something good is about to happen. */
 export function finish(named) {
-  const ty = thankYou(named);
-  return pack([
-    line(ty, RATE.slow, 2000),
-    line("Say it with me.", RATE.slow, 1000),
-    line(ty, RATE.slow, 2500),
-    line(CLOSE, RATE.slow, 0),
-  ]);
+  const result = affirm(named);
+  const text = result
+    ? `Thank you. ${result} Something good is about to happen.`
+    : "Thank you. Something good is about to happen.";
+  return pack([line(text, RATE.slow, 0)]);
 }
 
 export function breathOnly(count) {

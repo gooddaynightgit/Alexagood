@@ -50,11 +50,16 @@ test("start asks the question for what they chose", () => {
   assert.doesNotMatch(open.content[0].text, /no rush/);
 });
 
-test("finish reflects their words twice and never says solved", () => {
-  const r = rpc(4, "tools/call", { name: "finish_something_good", arguments: { named: "My money worries." } }).result;
-  const hits = r.content[0].text.match(/Something good is about to happen with your money worries\./g);
-  assert.equal(hits.length, 2);
-  assert.doesNotMatch(r.content[0].text, /solved|fixed|together/i);
+test("finish is one card: thank you, their perfect result in their words, something good", () => {
+  const r = rpc(4, "tools/call", {
+    name: "finish_something_good",
+    arguments: { named: "i am happy and grateful i'm living in my own home\nI have the money to travel" },
+  }).result;
+  assert.equal(r.structuredContent.steps.length, 1);
+  assert.equal(
+    r.content[0].text,
+    "Thank you. I am happy and grateful I'm living in my own home. I have the money to travel. Something good is about to happen.",
+  );
 });
 
 test("finish without words asks gently instead", () => {
@@ -89,7 +94,7 @@ test("script details", () => {
   assert.equal(breath(2).filter((s) => s.phase === "in").length, 2);
   assert.match(toSsml([{ text: "a & b", rate: "slow", pauseMs: 25000 }]), /a &amp; b.*10000ms.*10000ms.*5000ms/);
   assert.ok(start().steps.length > 5);
-  assert.equal(finish("x").steps.length, 4);
+  assert.equal(finish("x").steps.length, 1);
   assert.doesNotMatch(start().text, /Let's start with one slow/);
   assert.doesNotMatch(finish("x").text, /cup of tea|Breathe in/);
 });
