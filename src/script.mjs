@@ -31,14 +31,21 @@ export function breath(count = 1) {
   return steps;
 }
 
-export const QUESTION = [
-  line("Take your time. There's no rush.", RATE.slow, 1500),
-  line(
-    "Right at this moment, tell me: what challenge or situation are you dealing with? Or is there something you'd like to change, or something missing in your life?",
-    RATE.slow,
-    0,
-  ),
-];
+/** What they chose to name. "else" (or nothing) asks the open question. */
+export const FOCUS = ["challenge", "situation", "missing", "change", "else"];
+
+const QUESTIONS = {
+  challenge: "Right at this moment, tell me: what challenge are you dealing with?",
+  situation: "Right at this moment, tell me: what situation are you dealing with?",
+  missing: "Right at this moment, tell me: what feels missing in your life?",
+  change: "Right at this moment, tell me: what would you like to change?",
+  else: "Right at this moment, tell me: what challenge or situation are you dealing with? Or is there something you'd like to change, or something missing in your life?",
+};
+
+export function question(focus) {
+  const text = QUESTIONS[focus] ?? QUESTIONS.else;
+  return [line("Take your time. There's no rush.", RATE.slow, 1500), line(text, RATE.slow, 0)];
+}
 
 export const CLOSE = "It's going to be alright. All is well. Something good is about to happen.";
 
@@ -70,9 +77,9 @@ export const thankYou = (named) => `Thank you. Something good is about to happen
 
 // ---- sessions ---------------------------------------------------------------
 
-/** First half: opening, one slow breath, then the question. Alexa then listens. */
-export function start() {
-  return pack([...OPENING, ...breath(1), ...QUESTION]);
+/** First half: opening, one slow breath, then the question (shaped by what they chose). Alexa then listens. */
+export function start(focus) {
+  return pack([...OPENING, ...breath(1), ...question(focus)]);
 }
 
 /** Second half, once they've named it: their thank-you twice, then the close. */

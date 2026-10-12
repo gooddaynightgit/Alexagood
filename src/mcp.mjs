@@ -5,7 +5,7 @@
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { NAME, TAGLINE, breathOnly, finish, start } from "./script.mjs";
+import { FOCUS, NAME, TAGLINE, breathOnly, finish, start } from "./script.mjs";
 
 export const LATEST = "2025-11-25";
 export const SUPPORTED = [LATEST, "2025-06-18", "2025-03-26"];
@@ -63,7 +63,18 @@ export const TOOLS = [
     title: "Start Something Good",
     description:
       "Begin a Something Good session: a short welcome, one slow guided breath, then the question that invites the person to name a challenge, a situation, something missing, or something they want to change. Speak the returned ssml, then listen for their answer.",
-    inputSchema: { type: "object", properties: {}, additionalProperties: false },
+    inputSchema: {
+      type: "object",
+      properties: {
+        focus: {
+          type: "string",
+          enum: FOCUS,
+          description:
+            "Optional. What they want to name: a challenge, a situation, something missing, something they want to change, or something else. Shapes the question. Leave out if unknown.",
+        },
+      },
+      additionalProperties: false,
+    },
     outputSchema: sessionSchema,
     annotations: READ_ONLY,
   },
@@ -123,7 +134,7 @@ function callTool(params) {
   if (typeof name !== "string") throw new RpcError(-32602, "Missing tool name");
   switch (name) {
     case "start_something_good":
-      return toolResult(start());
+      return toolResult(start(FOCUS.includes(args.focus) ? args.focus : undefined));
     case "finish_something_good": {
       if (typeof args.named !== "string" || !args.named.trim()) {
         return {

@@ -25,7 +25,7 @@ Built for the [Build, Ship, Shape Amazon Developer Hackathon](https://amazonappd
 
 | Tool | Input | Returns |
 |---|---|---|
-| `start_something_good` | none | Welcome, one slow breath (in 4s, hold 2s, out 7s), then the question. |
+| `start_something_good` | optional `focus`: challenge, situation, missing, change, else | Welcome, one slow breath (in 4s, hold 2s, out 7s), then the question. |
 | `finish_something_good` | `named`: their words | "Thank you. Something good is about to happen with …" twice, then the close. |
 | `guided_breath` | `breaths`: 1 to 3 | Just the breath. |
 

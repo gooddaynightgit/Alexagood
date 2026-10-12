@@ -39,6 +39,13 @@ test("start returns ssml with real breaks and the question", () => {
   assert.doesNotMatch(r.content[0].text, /together/i);
 });
 
+test("start asks the question for what they chose", () => {
+  const r = rpc(8, "tools/call", { name: "start_something_good", arguments: { focus: "missing" } }).result;
+  assert.match(r.content[0].text, /what feels missing in your life\?$/);
+  const open = rpc(9, "tools/call", { name: "start_something_good", arguments: { focus: "nonsense" } }).result;
+  assert.match(open.content[0].text, /something missing in your life\?$/);
+});
+
 test("finish reflects their words twice and never says solved", () => {
   const r = rpc(4, "tools/call", { name: "finish_something_good", arguments: { named: "My money worries." } }).result;
   const hits = r.content[0].text.match(/Something good is about to happen with your money worries\./g);

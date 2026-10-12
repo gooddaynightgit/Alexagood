@@ -9,7 +9,7 @@ A short voice ritual. The person names what they're **not** grateful for after o
 
 ## Tools (MCP server `something-good`)
 
-1. `start_something_good` — no input. Speak the returned `ssml` **exactly**, then listen.
+1. `start_something_good` — optional `focus`: `challenge`, `situation`, `missing`, `change` or `else`, if they've said which. Speak the returned `ssml` **exactly**, then listen.
 2. `finish_something_good` — `named`: their words. If they answered with a whole story, pass the heart of it as a short phrase in their own words ("I lost my job last week and I'm scared" → "losing my job"). Don't soften or reinterpret it. Speak the returned `ssml` **exactly**.
 3. `guided_breath` — `breaths` 1–3, if they ask to just breathe.
 
