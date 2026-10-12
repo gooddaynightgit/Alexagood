@@ -99,6 +99,7 @@ export const TOOLS = [
           description: "Their perfect result in their own first-person words, e.g. 'I am living in my own home. I have the money to travel.' Do not reword it.",
           maxLength: 500,
         },
+        country: { type: "string", description: "Optional ISO country code for local crisis support." },
       },
       required: ["named"],
       additionalProperties: false,
@@ -113,7 +114,13 @@ export const TOOLS = [
       "Check what the person said or typed as their perfect result before finishing. status: ok (carry on), nudge (allowed, but gently suggest saying what they do want), block (ask them gently to change it; message says how), crisis (stop the ritual and share the message, which offers real support). finish_something_good refuses block and crisis.",
     inputSchema: {
       type: "object",
-      properties: { text: { type: "string", maxLength: 2000 } },
+      properties: {
+        text: { type: "string", maxLength: 2000 },
+        country: {
+          type: "string",
+          description: "Optional ISO country code (e.g. ZA, US, GB) so crisis support shows the right local helpline.",
+        },
+      },
       required: ["text"],
       additionalProperties: false,
     },
@@ -124,6 +131,10 @@ export const TOOLS = [
         ok: { type: "boolean", description: "True when they may finish (ok or nudge)." },
         message: { type: "string", description: "What to show or say. Empty when ok." },
         maxChars: { type: "number" },
+        support: {
+          type: "object",
+          description: "Only for crisis: the helpline to show (name, phone, note, emergency, url).",
+        },
       },
       required: ["status", "ok", "message", "maxChars"],
     },
@@ -173,12 +184,12 @@ function callTool(params) {
           isError: true,
         };
       }
-      const check = checkPerfectResult(args.named);
+      const check = checkPerfectResult(args.named, args.country);
       if (!check.ok) return { content: [{ type: "text", text: check.message }], structuredContent: check, isError: true };
       return toolResult(finish(args.named));
     }
     case "check_perfect_result": {
-      const result = { ...checkPerfectResult(args.text), maxChars: MAX_CHARS };
+      const result = { ...checkPerfectResult(args.text, args.country), maxChars: MAX_CHARS };
       return { content: [{ type: "text", text: result.message || "Looks good." }], structuredContent: result, isError: false };
     }
     case "guided_breath":

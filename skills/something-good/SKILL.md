@@ -11,7 +11,7 @@ A short voice ritual. The person names what they're **not** grateful for after o
 
 1. `start_something_good` — optional `focus`: `challenge`, `situation`, `missing`, `change` or `else`, if they've said which. Speak the returned `ssml` **exactly**, then listen.
 2. `finish_something_good` — `named`: their perfect result, exactly as they said it, in the first person ("I am living in my own home"). Don't reword it. Speak the returned `ssml` **exactly**.
-3. `check_perfect_result` — `text`: what they said. Call it before finishing. `ok`: carry on. `nudge`: say the message gently, then carry on if they're happy. `block`: say the message and let them try again. `crisis`: stop the ritual and say the message (it offers real support).
+3. `check_perfect_result` — `text`: what they said; `country`: the device's country code if you know it (for the right crisis line). Call it before finishing. `ok`: carry on. `nudge`: say the message gently, then carry on if they're happy. `block`: say the message and let them try again. `crisis`: stop the ritual and say the message (it offers real support).
 4. `guided_breath` — `breaths` 1–3, if they ask to just breathe.
 
 The `ssml` holds the timed silences and slow pace. Do not summarise it, shorten it or add to it.
@@ -37,7 +37,7 @@ Say: "That's alright. Take your time. A challenge, a situation, something missin
 
 ## If they sound in crisis
 
-If they mention wanting to harm themselves or not wanting to be alive, stop the ritual. Say you're glad they told you, that they deserve real support right now, and encourage them to contact a local emergency number or crisis line, or someone they trust. Do not continue with "something good is about to happen".
+If they mention wanting to harm themselves or not wanting to be alive, stop the ritual. Say you're glad they told you and that they deserve real support right now. Give the helpline from `check_perfect_result` (it knows South Africa, the US, Canada, the UK, Ireland, Australia and New Zealand), or else their local emergency number and findahelpline.com. Do not continue with "something good is about to happen".
 
 ## Without the server
 

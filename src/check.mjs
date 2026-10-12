@@ -10,10 +10,48 @@ export const MIN_WORDS = 3;
 export const MAX_CHARS = 300;
 export const NUDGE = "Gently nudging you to correct the text.";
 
-export const CRISIS_MESSAGE =
-  "It sounds like you're carrying something very heavy right now, and you deserve real support. " +
-  "In South Africa you can call the SADAG Suicide Crisis Helpline, free, 24 hours a day: 0800 567 567. " +
-  "If you're somewhere else, please call your local emergency number, or reach out to someone you trust.";
+/**
+ * Crisis lines by country (ISO 3166 alpha-2), each checked against the service's own site in Oct 2026.
+ * Anywhere else: local emergency number plus findahelpline.com (ThroughLine's free global directory).
+ */
+export const SUPPORT = {
+  ZA: { name: "SADAG Suicide Crisis Helpline", phone: "0800 567 567", note: "free, 24 hours a day", emergency: "10111 (or 112 from a cell phone)" },
+  US: { name: "988 Suicide & Crisis Lifeline", phone: "988", note: "call or text, free, 24/7", emergency: "911" },
+  CA: { name: "988 Suicide Crisis Helpline", phone: "988", note: "call or text, free, 24/7", emergency: "911" },
+  GB: { name: "Samaritans", phone: "116 123", note: "free, 24/7", emergency: "999" },
+  IE: { name: "Samaritans", phone: "116 123", note: "free, 24/7", emergency: "112 or 999" },
+  AU: { name: "Lifeline", phone: "13 11 14", note: "24/7", emergency: "000" },
+  NZ: { name: "1737, Need to talk?", phone: "1737", note: "call or text, free, 24/7", emergency: "111" },
+};
+export const HELPLINE_DIRECTORY = "https://findahelpline.com";
+
+const CRISIS_OPENING = "It sounds like you're carrying something very heavy right now, and you deserve real support.";
+
+export function crisisSupport(country) {
+  const line = SUPPORT[String(country ?? "").toUpperCase()];
+  if (line) {
+    return {
+      ...line,
+      url: HELPLINE_DIRECTORY,
+      message:
+        `${CRISIS_OPENING} Please reach out now to ${line.name} on ${line.phone} (${line.note}). ` +
+        `If you're in danger right now, call ${line.emergency}. You can come back to this later.`,
+    };
+  }
+  return {
+    name: "Find A Helpline",
+    phone: "",
+    note: "free helplines in your country",
+    emergency: "your local emergency number",
+    url: HELPLINE_DIRECTORY,
+    message:
+      `${CRISIS_OPENING} Please call your local emergency number if you're in danger right now, ` +
+      `or find a free helpline in your country at findahelpline.com. You can come back to this later.`,
+  };
+}
+
+/** Kept for callers that don't know the country. */
+export const CRISIS_MESSAGE = crisisSupport("ZA").message;
 
 const CRISIS = [
   /\bsuicid/i,
@@ -64,16 +102,19 @@ const POSITIVE_FRAME = /\b(free\s+(of|from)|debt[\s-]free|no\s+more|out\s+of|hea
 
 const KEYBOARD_RUNS = /(qwert|asdf|zxcv|hjkl|uiop|wasd|jkl;|yuio)/i;
 
-function issue(status, hint) {
-  if (status === "crisis") return { status, ok: false, message: CRISIS_MESSAGE };
+function issue(status, hint, country) {
+  if (status === "crisis") {
+    const support = crisisSupport(country);
+    return { status, ok: false, message: support.message, support };
+  }
   return { status, ok: status !== "block", message: `${NUDGE} ${hint}` };
 }
 
-export function checkPerfectResult(raw) {
+export function checkPerfectResult(raw, country) {
   const text = String(raw ?? "").trim();
 
   if (!text) return issue("block", "Please type or say your perfect result.");
-  if (CRISIS.some((re) => re.test(text))) return issue("crisis");
+  if (CRISIS.some((re) => re.test(text))) return issue("crisis", "", country);
   if (text.length > MAX_CHARS) {
     return issue("block", `Please keep it to ${MAX_CHARS} characters or fewer (you have ${text.length}).`);
   }

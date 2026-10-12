@@ -35,8 +35,19 @@ test("negative wording is nudged but allowed", () => {
 });
 
 test("crisis words stop the ritual with support", () => {
-  const r = c("I just want to die");
+  const r = c("I just want to die", "ZA");
   assert.equal(r.status, "crisis");
   assert.equal(r.ok, false);
   assert.match(r.message, /0800 567 567/);
+});
+
+test("crisis support follows the country, with a global fallback", () => {
+  assert.match(c("I want to die", "ZA").message, /SADAG.*0800 567 567/);
+  assert.match(c("I want to die", "us").message, /988/);
+  assert.match(c("I want to die", "GB").message, /Samaritans on 116 123/);
+  assert.match(c("I want to die", "AU").message, /13 11 14/);
+  assert.match(c("I want to die", "NZ").message, /1737/);
+  const anywhere = c("I want to die", "BR");
+  assert.match(anywhere.message, /findahelpline\.com/);
+  assert.equal(anywhere.support.url, "https://findahelpline.com");
 });

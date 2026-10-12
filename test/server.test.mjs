@@ -106,5 +106,5 @@ test("check tool and finish refuse blocked text", () => {
   assert.equal(chk.structuredContent.status, "block");
   const fin = rpc(21, "tools/call", { name: "finish_something_good", arguments: { named: "I want to die" } }).result;
   assert.equal(fin.isError, true);
-  assert.match(fin.content[0].text, /0800 567 567/);
+  assert.match(fin.content[0].text, /findahelpline\.com/);
 });
