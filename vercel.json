@@ -1,4 +1,6 @@
 {
+  "framework": null,
+  "outputDirectory": "public",
   "rewrites": [{ "source": "/mcp", "destination": "/api/mcp" }],
   "functions": { "api/mcp.mjs": { "includeFiles": "skills/**", "maxDuration": 10 } }
 }

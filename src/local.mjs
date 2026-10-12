@@ -1,6 +1,6 @@
 // Run locally: node src/local.mjs  ->  http://localhost:8787/mcp
 import { createServer } from "node:http";
-import { handleHttp } from "./server.mjs";
+import { handleHttp } from "./mcp.mjs";
 
 const port = Number(process.env.PORT ?? 8787);
 

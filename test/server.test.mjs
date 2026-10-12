@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { handleHttp, LATEST } from "../src/server.mjs";
+import { handleHttp, LATEST } from "../src/mcp.mjs";
 import { breath, finish, reflect, start, toSsml } from "../src/script.mjs";
 
 const post = (msg, headers = {}) =>

@@ -1,5 +1,5 @@
 // Vercel entry point. The MCP endpoint is /mcp (rewritten here) or /api/mcp.
-import { handleHttp } from "../src/server.mjs";
+import { handleHttp } from "../src/mcp.mjs";
 
 async function rawBody(req) {
   if (typeof req.body === "string") return req.body;

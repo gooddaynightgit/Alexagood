@@ -14,7 +14,7 @@ Built for the [Build, Ship, Shape Amazon Developer Hackathon](https://amazonappd
 
 | Path | What it is |
 |---|---|
-| `src/server.mjs` | MCP server, Streamable HTTP transport, spec `2025-11-25`. Stateless, no dependencies. |
+| `src/mcp.mjs` | MCP server, Streamable HTTP transport, spec `2025-11-25`. Stateless, no dependencies. |
 | `src/script.mjs` | The words, pace and pauses. Builds SSML with real timed breaks for Alexa. |
 | `src/lambda.mjs` | AWS Lambda entry point (Function URL). |
 | `api/mcp.mjs` | Vercel entry point; the live endpoint is `/mcp`. |
