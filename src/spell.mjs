@@ -68,14 +68,29 @@ function edits1(word) {
   return out;
 }
 
-function best(cands, dict) {
+/**
+ * How likely each kind of slip is when typing on a phone: a missing last letter is
+ * very common, a swapped pair fairly common, other missing letters next.
+ */
+function slipWeight(word, cand) {
+  if (cand.length === word.length + 1 && cand.startsWith(word)) return 5; // "hom" -> "home"
+  if (cand.length === word.length + 1) return 2; // a letter left out
+  if (cand.length === word.length && [...cand].sort().join("") === [...word].sort().join("")) return 3; // swapped
+  return 1;
+}
+
+function best(cands, dict, word) {
   let pick = null;
   let pickF = 0;
+  let pickScore = 0;
   for (const c of cands) {
     const f = dict.get(c) ?? 0;
-    if (f > pickF) {
+    if (!f) continue;
+    const score = word ? f * slipWeight(word, c) : f;
+    if (score > pickScore) {
       pick = c;
       pickF = f;
+      pickScore = score;
     }
   }
   return pick ? { word: pick, f: pickF } : null;
@@ -88,16 +103,26 @@ export function correctWord(lower) {
   if (Object.hasOwn(FIXED, lower)) return FIXED[lower];
   if (lower.length < 3 || /[^a-z']/.test(lower)) return null;
 
+  // Stretched letters ("haaaarmony", "sooo"): squeeze runs of 3+ down to 2 and 1 and try those first.
+  if (/([a-z])\1{2,}/.test(lower)) {
+    const two = lower.replace(/([a-z])\1{2,}/g, "$1$1");
+    const one = lower.replace(/([a-z])\1{2,}/g, "$1");
+    for (const squeezed of [one, two]) {
+      if (dict.has(squeezed)) return squeezed;
+    }
+    return correctWord(two) ?? correctWord(one) ?? one;
+  }
+
   const known = dict.get(lower) ?? 0;
-  const one = best(edits1(lower), dict);
+  const one = best(edits1(lower), dict, lower);
 
   if (known) {
     // A real but rare word right next to a very common one is usually a slip: "withy" -> "with".
-    if (known < 200 && one && one.f >= known * 1000 && one.f > 50000) return one.word;
+    if (known < 1000 && one && one.f >= known * 1000 && one.f > 50000) return one.word;
     return null;
   }
   if (one) return one.word;
-  if (lower.length < 5) return null;
+  if (lower.length < 4) return null;
   let two = null;
   for (const e of edits1(lower)) {
     const b = best(edits1(e), dict);

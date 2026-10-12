@@ -19,3 +19,15 @@ test("reports each change", () => {
   const r = s("my own hous");
   assert.deepEqual(r.fixes, [{ from: "hous", to: "house" }]);
 });
+
+test("squeezes stretched letters", () => {
+  assert.equal(s("Haaaarmony to live").corrected, "Harmony to live");
+  assert.equal(s("I am sooooo happy").corrected, "I am so happy");
+});
+
+test("likely phone slips win, ordinary sentences stay as they are", () => {
+  assert.equal(s("I hav a beautifull hom").corrected, "I have a beautiful home");
+  for (const t of ["I have paid off my bond", "My mum is well and we laugh together", "I am calm, confident and at ease"]) {
+    assert.equal(s(t).changed, false, t);
+  }
+});
