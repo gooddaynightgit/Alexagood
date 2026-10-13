@@ -17,8 +17,15 @@ const line = (text, rate = RATE.slow, pauseMs = 700, phase) => ({ text, rate, pa
 /** Lines that belong on the same screen as the answer box. */
 const ask = (text, pauseMs) => ({ ...line(text, RATE.slow, pauseMs), group: "ask" });
 
+/** The welcome: three lines on one screen, a pause between each, the last one said with excitement (shown in italics). */
+const WELCOME = ["Welcome to Something Good.", "This is the place to name what you're not grateful for.", "Then turn it around."];
 export const OPENING = [
-  line("Welcome to Something Good. This is the place to name what you're not grateful for.", RATE.normal, 1200),
+  {
+    ...line(WELCOME.join("\n"), RATE.normal, 1200),
+    speak: WELCOME,
+    speakPauseMs: 1200,
+    excited: [WELCOME[2]],
+  },
 ];
 
 export function breath(count = 1) {
@@ -155,12 +162,17 @@ function breaks(ms) {
 
 const prosody = (rate, text) => `<prosody rate="${rate}">${escapeXml(text.replace(/…/g, "..."))}</prosody>`;
 
+/** Alexa's excited voice for a line that should lift; the rate stays as set. */
+const excite = (ssml) => `<amazon:emotion name="excited" intensity="medium">${ssml}</amazon:emotion>`;
+
 /** A step may show more than it says: `speak` lists the parts to say aloud, with `speakPauseMs` between them. */
 export function toSsml(steps) {
   const body = steps
     .map((s) => {
       const spoken = Array.isArray(s.speak)
-        ? s.speak.map((part) => prosody(s.rate, part)).join(breaks(s.speakPauseMs ?? 1500))
+        ? s.speak
+            .map((part) => (s.excited?.includes(part) ? excite(prosody(s.rate, part)) : prosody(s.rate, part)))
+            .join(breaks(s.speakPauseMs ?? 1500))
         : prosody(s.rate, s.text);
       return `${spoken}${breaks(s.pauseMs)}`;
     })

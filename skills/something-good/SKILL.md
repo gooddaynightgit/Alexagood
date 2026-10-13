@@ -43,7 +43,7 @@ If they mention wanting to harm themselves or not wanting to be alive, stop the 
 
 If the tools are unavailable, say this, slowly, with real pauses:
 
-1. "Welcome to Something Good. This is the place to name what you're not grateful for."
+1. "Welcome to Something Good." (pause) "This is the place to name what you're not grateful for." (pause) "Then turn it around." (said with excitement)
 2. "Breathe in slowly…" (4s) — "Hold it gently…" (2s) — "Slowly release… just let it go." (7s)
 3. "Take your time." — "Consider what is the challenge that you are not grateful for in your life." — "Right now, at this moment in time, change your challenge. Turn it around. What would you like it to be?" — "Your perfect result:" — listen. (Say "situation", "what is missing", or "it" in place of "challenge" to match what they chose.)
 4. Show "Thank you. [their perfect result, in their own words]. Something good is about to happen." Say only: "Thank you." (pause) "Something good is about to happen."
