@@ -56,6 +56,11 @@ const sessionSchema = {
             description: "When present, say only these parts aloud (the card still shows `text`).",
           },
           speakPauseMs: { type: "number", description: "Silence between the `speak` parts." },
+          excited: {
+            type: "array",
+            items: { type: "string" },
+            description: "Parts to say with excitement and show in italics.",
+          },
         },
         required: ["text", "rate", "pauseMs"],
       },
