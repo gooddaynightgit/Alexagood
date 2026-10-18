@@ -61,6 +61,11 @@ test("if Bedrock is down, positive words pass and negative words are blocked", a
   assert.equal((await turnAround("I don't want to be broke anymore", "ZA", { ask: down })).status, "block");
 });
 
+test("confirm reads naturally", async () => {
+  const r = await turnAround("my son stops being angry", "ZA", { ask: nova({ status: "ok", result: "My son and I share a calm, happy bond." }), pick: () => 0.4 });
+  assert.match(r.confirm, /: you and your son share a calm, happy bond\. Is that right\?$/);
+});
+
 test("replies are parsed safely", () => {
   assert.deepEqual(parseReply('```json\n{"status":"ok","result":"I am calm."}\n```'), { status: "ok", result: "I am calm." });
   assert.equal(parseReply("sorry"), null);

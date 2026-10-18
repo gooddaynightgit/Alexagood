@@ -71,7 +71,9 @@ export function parseReply(raw) {
 
 /** "I am fully paid up." -> "Just to clarify: you are fully paid up. Is that right?" */
 export function confirmLine(result, lead) {
-  return `${lead} ${reflect(result)}. ${CONFIRM_QUESTION}`;
+  // "My son and I share…" reads back as "you and your son share…", not "your son and you share…".
+  const facing = reflect(result).replace(/\byour ((?:[\w'-]+ ){0,2}[\w'-]+) and you\b/gi, "you and your $1");
+  return `${lead} ${facing}. ${CONFIRM_QUESTION}`;
 }
 
 const blocked = (message) => ({ status: "block", ok: false, message });
