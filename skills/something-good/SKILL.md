@@ -11,7 +11,7 @@ A short voice ritual. The person names what they're **not** grateful for after o
 
 1. `start_something_good` — optional `focus`: `challenge`, `situation`, `missing`, `change` or `else`, if they've said which. Speak the returned `ssml` **exactly**, then listen.
 2. `turn_around_perfect_result` — `text`: their perfect result, exactly as they said it; `country`: the device's country code if you know it (for the right crisis line). It checks every rule, then rewrites it to be positive, uplifting and clear ("I am debt free" becomes "I am fully paid up."). Always call it before finishing.
-   - `confirm`: speak the returned `ssml` (e.g. "Just to clarify: you are fully paid up. Is that right?") and listen. On yes, call `finish_something_good` with `result`. On no, say "Of course. How would you like it to be?" and call this tool again with their new words.
+   - `confirm`: speak the returned `ssml` (e.g. "Just to clarify: you are fully paid up. Is that right?") and listen. On yes, call `finish_something_good` with `result`. On no, say "Of course. How would you like it to be?" and call this tool again with their new words. Allow three confirm rounds at most: after a third no, call `finish_something_good` with `gentleEnd: true` (it closes with "Thank you. Something good is about to happen." and never repeats a version they turned down).
    - `block`: say the `message` gently and let them try again.
    - `crisis`: stop the ritual and say the `message` (it offers real support).
 3. `finish_something_good` — `named`: the `result` they confirmed. Speak the returned `ssml` **exactly**.

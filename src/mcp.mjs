@@ -107,8 +107,12 @@ export const TOOLS = [
           maxLength: 500,
         },
         country: { type: "string", description: "Optional ISO country code for local crisis support." },
+        gentleEnd: {
+          type: "boolean",
+          description:
+            "True after a third 'no' at the confirm step: closes with 'Thank you. Something good is about to happen.' without their words. `named` is then not needed.",
+        },
       },
-      required: ["named"],
       additionalProperties: false,
     },
     outputSchema: sessionSchema,
@@ -244,6 +248,7 @@ async function callTool(params) {
     case "start_something_good":
       return toolResult(start(FOCUS.includes(args.focus) ? args.focus : undefined));
     case "finish_something_good": {
+      if (args.gentleEnd === true) return toolResult(finish(""));
       if (typeof args.named !== "string" || !args.named.trim()) {
         return {
           content: [{ type: "text", text: "Ask them gently what they'd like to name, then call again with their words." }],
