@@ -14,6 +14,19 @@ test("too short, empty and too long are blocked", () => {
   assert.equal(c("I have my own home ".repeat(20)).status, "block");
 });
 
+test("fragments that don't make sense are blocked", () => {
+  for (const t of ["Move to my", "Thank you for", "I have the", "Peace and", "I am just", "it is it", "home home home", "I want my. I am happy"]) {
+    assert.equal(c(t).status, "block", t);
+  }
+  assert.match(c("Move to my").message, /full sentence/);
+});
+
+test("short whole thoughts still pass", () => {
+  for (const t of ["I am happy", "I am at peace", "I love my work", "I am who I am", "I fit in", "I have a garden.", "Calm, healthy and rich"]) {
+    assert.notEqual(c(t).status, "block", t);
+  }
+});
+
 test("junk is blocked", () => {
   for (const t of ["asdfgh jkl qwerty", "aaaaaaa bbbbb ccccc", "1234 5678 !!!!", "xkcdzp rtvwq bcdfg"]) {
     assert.equal(c(t).status, "block", t);

@@ -102,6 +102,36 @@ const POSITIVE_FRAME = /\b(free\s+(of|from)|debt[\s-]free|no\s+more|out\s+of|hea
 
 const KEYBOARD_RUNS = /(qwert|asdf|zxcv|hjkl|uiop|wasd|jkl;|yuio)/i;
 
+// A sentence can't stop on these: "Move to my", "I have the", "Peace and".
+const DANGLING_END = new Set([
+  "a", "an", "the", "my", "your", "our", "their", "its", "his",
+  "to", "of", "for", "with", "from", "into", "at", "than", "towards",
+  "and", "or", "but", "because", "if", "that", "so", "very", "really", "more", "most",
+]);
+
+// Little words that carry no meaning on their own. A perfect result needs at least one word that isn't one.
+const FILLER = new Set([
+  ...DANGLING_END,
+  "i", "i'm", "im", "me", "we", "you", "it", "is", "am", "are", "was", "be", "been",
+  "this", "these", "those", "there", "here", "in", "on", "up", "out", "by", "all", "just", "now",
+  "yes", "no", "ok", "okay", "um", "uh", "hmm", "the", "do", "did", "can", "will", "would",
+]);
+
+const bare = (w) => w.toLowerCase().replace(/[^\p{L}']/gu, "");
+
+/** Does it read as a whole thought, not a fragment like "Move to my"? Checked per line or sentence. */
+function makesSense(text) {
+  const parts = text.split(/[\n.!?;]+/).map((p) => p.trim()).filter((p) => /\p{L}/u.test(p));
+  for (const part of parts) {
+    const ws = part.split(/[\s,]+/).map(bare).filter(Boolean);
+    if (DANGLING_END.has(ws[ws.length - 1])) return false;
+  }
+  const all = text.split(/\s+/).map(bare).filter(Boolean);
+  if (!all.some((w) => w.length > 1 && !FILLER.has(w))) return false;
+  if (new Set(all).size < Math.min(3, all.length)) return false;
+  return true;
+}
+
 function issue(status, hint, country) {
   if (status === "crisis") {
     const support = crisisSupport(country);
@@ -138,6 +168,10 @@ export function checkPerfectResult(raw, country) {
 
   if (words.length < MIN_WORDS) {
     return issue("block", "Please add a few more words, like \"I have my own home\".");
+  }
+
+  if (!makesSense(text)) {
+    return issue("block", "That doesn't read as a full sentence yet. Try finishing the thought, like \"I have my own home\".");
   }
 
   if (NEGATIVE.some((re) => re.test(text)) && !POSITIVE_FRAME.test(text)) {
