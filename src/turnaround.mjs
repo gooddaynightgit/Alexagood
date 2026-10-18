@@ -2,7 +2,7 @@
 // The rewrite is done by Amazon Nova on Amazon Bedrock. Every rule in check.mjs still applies,
 // before the rewrite (to what they said) and after it (to what Nova wrote).
 
-import { checkPerfectResult, crisisSupport, NUDGE } from "./check.mjs";
+import { checkPerfectResult, crisisSupport, negativeWords, NUDGE } from "./check.mjs";
 import { affirm, reflect, toSsml } from "./script.mjs";
 import { isKnownWord } from "./spell.mjs";
 
@@ -129,7 +129,9 @@ export async function turnAround(raw, country, { ask = askBedrock, pick = Math.r
     if (after.status === "nudge" || lost.length) {
       // The rewrite kept a negative word ("debts") or changed one of their words ("steyn"): ask once more, saying so.
       const why = [
-        after.status === "nudge" ? "still had a negative word; use none of those words" : "",
+        after.status === "nudge"
+          ? `still used ${negativeWords(reply.result).map((w) => `"${w}"`).join(", ")}; use none of those words (e.g. "I am fully paid up")`
+          : "",
         lost.length ? `changed or dropped their words ${lost.map((w) => `"${w}"`).join(", ")}; copy those exactly as written` : "",
       ].filter(Boolean).join(", and it ");
       try {

@@ -100,6 +100,15 @@ const NEGATIVE = [
 // ...unless it's said as freedom from it: "free of debt", "debt-free", "no more pain".
 const POSITIVE_FRAME = /\b(free\s+(of|from)|debt[\s-]free|no\s+more|out\s+of|healed\s+from|recovered\s+from)\b/i;
 
+/** The negative words in a text ("debts", "don't"), so a rewrite can be asked to drop exactly those. */
+export function negativeWords(text) {
+  const found = [];
+  for (const re of NEGATIVE) {
+    for (const m of String(text ?? "").matchAll(new RegExp(re.source, "gi"))) found.push(m[0].toLowerCase());
+  }
+  return [...new Set(found)];
+}
+
 const KEYBOARD_RUNS = /(qwert|asdf|zxcv|hjkl|uiop|wasd|jkl;|yuio)/i;
 
 // A sentence can't stop on these: "Move to my", "I have the", "Peace and".

@@ -63,10 +63,12 @@ test("if Bedrock is down, positive words pass and negative words are blocked", a
 
 test("a rewrite that keeps a negative word gets one more try", async () => {
   const replies = ["I am glad my debts are paid.", "I am fully paid up and it feels awesome."];
-  const ask = async () => JSON.stringify({ status: "ok", result: replies.shift() });
+  const asked = [];
+  const ask = async (t) => (asked.push(t), JSON.stringify({ status: "ok", result: replies.shift() }));
   const r = await turnAround("How awesome it will be when my debts are paid", "ZA", { ask, pick: first });
   assert.equal(r.status, "confirm");
   assert.equal(r.result, "I am fully paid up and it feels awesome.");
+  assert.match(asked[1], /still used "debts"/);
 });
 
 test("names and unusual words are never respelled", async () => {
