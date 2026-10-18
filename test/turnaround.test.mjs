@@ -74,6 +74,8 @@ test("a rewrite that keeps a negative word gets one more try", async () => {
 test("names and unusual words are never respelled", async () => {
   assert.deepEqual(lostWords("my own fully paid up steyn home", "I live in my fully paid-up Stein home."), ["steyn"]);
   assert.deepEqual(lostWords("my steyn home", "I live in my Steyn home."), []);
+  assert.deepEqual(lostWords("I don't want to be broke anymore", "I am fully paid up."), []);
+  assert.deepEqual(lostWords("I dont want debts", "I am fully paid up."), []);
   const replies = ["I live in my fully paid-up Stein home.", "I live in my fully paid-up Steyn home."];
   const ask = async () => JSON.stringify({ status: "ok", result: replies.shift() });
   const r = await turnAround("How awesome it will be to have my own fully paid up steyn home", "ZA", { ask, pick: first });

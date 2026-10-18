@@ -71,7 +71,9 @@ const tokens = (text) =>
  */
 export function lostWords(raw, rewrite) {
   const kept = new Set(tokens(rewrite));
-  return [...new Set(tokens(raw).filter((w) => !isKnownWord(w)))].filter((w) => !kept.has(w));
+  // Contractions ("don't") and negative words are meant to go; only names and unusual words must stay.
+  const negative = new Set(negativeWords(raw).flatMap((w) => tokens(w)));
+  return [...new Set(tokens(raw).filter((w) => !w.includes("'") && !negative.has(w) && !isKnownWord(w)))].filter((w) => !kept.has(w));
 }
 
 /** Nova's reply as { status, result }. Anything odd counts as no answer. */
