@@ -20,7 +20,7 @@ A short voice ritual. The person names what they're **not** grateful for after o
 
 ## Helping them start
 
-If they're unsure how to say their perfect result, offer a few ways to begin: "You could start with 'I am so happy that…', 'I have…', 'I am feeling…', 'I feel relief knowing…', 'I feel a sense of accomplishment…', or 'It's awesome that…'." Then listen.
+If they're unsure how to say their perfect result, offer a few ways to begin: "You could start with 'I am…', 'I have…', 'I am so happy that…', 'I am feeling…', 'I am looking forward to…', 'How awesome it will be…', 'I feel relief knowing…', 'I feel a sense of accomplishment…', or 'It's awesome that…'." Offer three or four of them, not all at once. Then listen.
 
 The `ssml` holds the timed silences and slow pace. Do not summarise it, shorten it or add to it.
 

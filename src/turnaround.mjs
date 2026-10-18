@@ -104,8 +104,23 @@ export async function turnAround(raw, country, { ask = askBedrock, pick = Math.r
   if (reply?.status === "crisis") return crisis(country);
   if (reply?.status === "unclear") return blocked(UNCLEAR);
   if (reply?.status === "ok") {
-    const after = checkPerfectResult(reply.result, country);
+    let after = checkPerfectResult(reply.result, country);
     if (after.status === "crisis") return crisis(country);
+    if (after.status === "nudge") {
+      // The rewrite kept a negative word ("debts"): ask once more, saying so.
+      try {
+        const again = parseReply(
+          await ask(`${String(raw).trim()}\n\n(Your rewrite "${reply.result}" still had a negative word. Rewrite it again with none of those words.)`),
+        );
+        if (again?.status === "ok") {
+          reply = again;
+          after = checkPerfectResult(again.result, country);
+          if (after.status === "crisis") return crisis(country);
+        }
+      } catch {
+        /* keep the first answer */
+      }
+    }
     if (after.status === "ok") result = reply.result;
   }
 
