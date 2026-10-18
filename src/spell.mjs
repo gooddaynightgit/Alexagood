@@ -51,6 +51,11 @@ const FIXED = {
   theres: "there's",
 };
 
+/** Is this (lower-case) word in the dictionary? Names and unusual words are not. */
+export function isKnownWord(lower) {
+  return freq().has(lower) || lower in FIXED;
+}
+
 const LETTERS = "abcdefghijklmnopqrstuvwxyz";
 
 function edits1(word) {

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { CONFIRM_LEADS, parseReply, turnAround } from "../src/turnaround.mjs";
+import { CONFIRM_LEADS, lostWords, parseReply, turnAround } from "../src/turnaround.mjs";
 
 const nova = (reply) => async () => JSON.stringify(reply);
 const first = () => 0;
@@ -67,6 +67,18 @@ test("a rewrite that keeps a negative word gets one more try", async () => {
   const r = await turnAround("How awesome it will be when my debts are paid", "ZA", { ask, pick: first });
   assert.equal(r.status, "confirm");
   assert.equal(r.result, "I am fully paid up and it feels awesome.");
+});
+
+test("names and unusual words are never respelled", async () => {
+  assert.deepEqual(lostWords("my own fully paid up steyn home", "I live in my fully paid-up Stein home."), ["steyn"]);
+  assert.deepEqual(lostWords("my steyn home", "I live in my Steyn home."), []);
+  const replies = ["I live in my fully paid-up Stein home.", "I live in my fully paid-up Steyn home."];
+  const ask = async () => JSON.stringify({ status: "ok", result: replies.shift() });
+  const r = await turnAround("How awesome it will be to have my own fully paid up steyn home", "ZA", { ask, pick: first });
+  assert.equal(r.result, "I live in my fully paid-up Steyn home.");
+  const stubborn = async () => JSON.stringify({ status: "ok", result: "I live in my Stein home." });
+  const own = await turnAround("I love my steyn home", "ZA", { ask: stubborn, pick: first });
+  assert.equal(own.result, "I love my steyn home.", "falls back to their own words");
 });
 
 test("confirm reads naturally", async () => {

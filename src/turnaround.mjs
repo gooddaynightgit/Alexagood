@@ -4,6 +4,7 @@
 
 import { checkPerfectResult, crisisSupport, NUDGE } from "./check.mjs";
 import { affirm, reflect, toSsml } from "./script.mjs";
+import { isKnownWord } from "./spell.mjs";
 
 export const MODEL = "us.amazon.nova-2-lite-v1:0";
 export const TIMEOUT_MS = 6000;
@@ -14,10 +15,11 @@ Rewrite their perfect result so that:
 1. It is positive and uplifting. It says what they DO have or feel. It contains NONE of these kinds of words: not, no, never, nothing, don't, can't, won't, without, anymore, free (as in free of), debt, broke, poor, sick, ill, pain, hurt, alone, lonely, stress, stressed, worry, anxious, afraid, scared, fail, lose, lost, hate, angry, stop, quit, problem, struggle.
    Examples: "I am debt free" -> "I am fully paid up." ; "not lonely and not stressed" -> "I am surrounded by people who love me, and I feel calm." ; "no more pain in my back" -> "My back feels comfortable and strong." ; "I can afford my rent without worrying" -> "I pay my rent with ease."
 2. It is first person ("I", "my"), present tense, as if already true. Calm and believable. Never add things they did not mean.
-3. It keeps their meaning, their sentences and as many of their own words as possible. If it is already positive and makes sense, return it unchanged except for obvious grammar or a final full stop.
-4. At most 3 short sentences, under 200 characters.
-5. If it is an unfinished fragment or nonsense whose meaning you cannot be sure of (e.g. "Move to my", "I am happy that I have", "I have", "asdf"), do not guess: return unclear.
-6. If it mentions harming themselves or not wanting to live, return crisis.
+3. Names, places and any word you don't recognise (e.g. "Steyn", "Soweto", "Sipho") are copied exactly as written. Never correct, respell or swap them for a similar word.
+4. It keeps their meaning, their sentences and as many of their own words as possible. If it is already positive and makes sense, return it unchanged except for obvious grammar or a final full stop.
+5. At most 3 short sentences, under 200 characters.
+6. If it is an unfinished fragment or nonsense whose meaning you cannot be sure of (e.g. "Move to my", "I am happy that I have", "I have", "asdf"), do not guess: return unclear.
+7. If it mentions harming themselves or not wanting to live, return crisis.
 
 Reply with one line of JSON only, no code fences: {"status":"ok","result":"..."} or {"status":"unclear"} or {"status":"crisis"}.`;
 
@@ -53,6 +55,23 @@ export async function askBedrock(text, env = process.env) {
     { abortSignal: AbortSignal.timeout(TIMEOUT_MS) },
   );
   return out.output?.message?.content?.find((c) => c.text)?.text ?? "";
+}
+
+const tokens = (text) =>
+  String(text ?? "")
+    .toLowerCase()
+    .replace(/[\u2018\u2019]/g, "'")
+    .split(/[^\p{L}']+/u)
+    .map((w) => w.replace(/^'+|'+$/g, "").replace(/'s$/, ""))
+    .filter((w) => w.length > 1);
+
+/**
+ * Words the rewrite must keep exactly: names, places and anything not in the dictionary
+ * ("steyn" must never become "Stein"). Returns the ones the rewrite lost.
+ */
+export function lostWords(raw, rewrite) {
+  const kept = new Set(tokens(rewrite));
+  return [...new Set(tokens(raw).filter((w) => !isKnownWord(w)))].filter((w) => !kept.has(w));
 }
 
 /** Nova's reply as { status, result }. Anything odd counts as no answer. */
@@ -106,12 +125,15 @@ export async function turnAround(raw, country, { ask = askBedrock, pick = Math.r
   if (reply?.status === "ok") {
     let after = checkPerfectResult(reply.result, country);
     if (after.status === "crisis") return crisis(country);
-    if (after.status === "nudge") {
-      // The rewrite kept a negative word ("debts"): ask once more, saying so.
+    const lost = lostWords(raw, reply.result);
+    if (after.status === "nudge" || lost.length) {
+      // The rewrite kept a negative word ("debts") or changed one of their words ("steyn"): ask once more, saying so.
+      const why = [
+        after.status === "nudge" ? "still had a negative word; use none of those words" : "",
+        lost.length ? `changed or dropped their words ${lost.map((w) => `"${w}"`).join(", ")}; copy those exactly as written` : "",
+      ].filter(Boolean).join(", and it ");
       try {
-        const again = parseReply(
-          await ask(`${String(raw).trim()}\n\n(Your rewrite "${reply.result}" still had a negative word. Rewrite it again with none of those words.)`),
-        );
+        const again = parseReply(await ask(`${String(raw).trim()}\n\n(Your rewrite "${reply.result}" ${why}. Rewrite it again.)`));
         if (again?.status === "ok") {
           reply = again;
           after = checkPerfectResult(again.result, country);
@@ -121,7 +143,7 @@ export async function turnAround(raw, country, { ask = askBedrock, pick = Math.r
         /* keep the first answer */
       }
     }
-    if (after.status === "ok") result = reply.result;
+    if (after.status === "ok" && !lostWords(raw, reply.result).length) result = reply.result;
   }
 
   if (!result) {
