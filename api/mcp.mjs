@@ -12,7 +12,7 @@ async function rawBody(req) {
 
 export default async function handler(req, res) {
   const body = req.method === "POST" ? await rawBody(req) : "";
-  const out = handleHttp({ method: req.method, headers: req.headers, body });
+  const out = await handleHttp({ method: req.method, headers: req.headers, body });
   for (const [k, v] of Object.entries(out.headers)) res.setHeader(k, v);
   res.status(out.status).send(out.body);
 }

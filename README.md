@@ -17,6 +17,7 @@ Built for the [Build, Ship, Shape Amazon Developer Hackathon](https://amazonappd
 | `src/mcp.mjs` | MCP server, Streamable HTTP transport, spec `2025-11-25`. Stateless, no dependencies. |
 | `src/spell.mjs` | Spelling suggestions (never applied without asking). |
 | `src/check.mjs` | Rules for the perfect result (shared by Alexa and the web page). |
+| `src/turnaround.mjs` | Positive rewrite with Amazon Nova on Amazon Bedrock, then the confirm question. |
 | `src/script.mjs` | The words, pace and pauses. Builds SSML with real timed breaks for Alexa. |
 | `src/lambda.mjs` | AWS Lambda entry point (Function URL). |
 | `api/mcp.mjs` | Vercel entry point; the live endpoint is `/mcp`. |
@@ -29,6 +30,7 @@ Built for the [Build, Ship, Shape Amazon Developer Hackathon](https://amazonappd
 |---|---|---|
 | `start_something_good` | optional `focus`: challenge, situation, missing, change, else | Welcome, one slow breath (in 4s, hold 2s, out 7s), then the question. |
 | `finish_something_good` | `named`: their perfect result | One line: "Thank you.", their perfect result in their own words, "Something good is about to happen." |
+| `turn_around_perfect_result` | `text`, optional `country` | Every rule below, then Amazon Nova (Bedrock) rewrites it to be positive and clear in their own words ("I am debt free" → "I am fully paid up."). Returns `confirm` with the question to ask ("Just to clarify: you are fully paid up. Is that right?"), or `block` / `crisis`. |
 | `check_perfect_result` | `text` | ok / nudge / block / crisis, with a gentle message. Blocks swearing, junk, personal details, too short or long; nudges negative wording; crisis words get the SADAG helpline. |
 | `suggest_spelling` | `text` | The corrected text and each change, for the person to accept or not. |
 | `guided_breath` | `breaths`: 1 to 3 | Just the breath. |
@@ -56,7 +58,7 @@ curl -s localhost:8787/mcp \
 
 ## Deploy to AWS Lambda
 
-1. Create a Node.js 22 Lambda function with handler `src/lambda.handler` and upload this folder as a zip.
+1. Create a Node.js 22 Lambda function with handler `src/lambda.handler` and upload this folder as a zip. Give its role `bedrock:InvokeModel` on Amazon Nova 2 Lite (`us.amazon.nova-2-lite-v1:0`). The AWS SDK is built into the runtime.
 2. Add a Function URL (auth type `NONE`; the server checks `Origin` for browsers).
 3. Optional: set `ALLOWED_ORIGINS` to a comma-separated list of web origins allowed to call it.
 

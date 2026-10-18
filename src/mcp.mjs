@@ -7,6 +7,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { checkPerfectResult, MAX_CHARS } from "./check.mjs";
 import { suggestSpelling } from "./spell.mjs";
+import { turnAround } from "./turnaround.mjs";
 import { FOCUS, NAME, TAGLINE, breathOnly, finish, start } from "./script.mjs";
 
 export const LATEST = "2025-11-25";
@@ -29,7 +30,7 @@ function skill() {
 
 const INSTRUCTIONS = [
   `${NAME} guides someone through naming what they're not grateful for, then giving thanks as if something good is already on its way.`,
-  "Call start_something_good first and speak its ssml exactly, then listen. When they answer, call finish_something_good with their words and speak that ssml exactly.",
+  "Call start_something_good first and speak its ssml exactly, then listen. When they answer, call turn_around_perfect_result with their words and speak its ssml, which asks them to confirm a positive version. On yes, call finish_something_good with its result and speak that ssml exactly.",
   "Never rush, never skip the breaks, never claim their problem is solved, never breathe 'together' with them.",
   `The full guide is the resource ${SKILL_URI}.`,
 ].join(" ");
@@ -147,6 +148,40 @@ export const TOOLS = [
     annotations: READ_ONLY,
   },
   {
+    name: "turn_around_perfect_result",
+    title: "Turn their perfect result around",
+    description:
+      "Call this with their perfect result before finishing. It applies every rule in check_perfect_result, then Amazon Nova rewrites it to be positive, uplifting and clear, in their own first-person words as if already true (\"I am debt free\" becomes \"I am fully paid up.\"). status confirm: show `result`, say `ssml` (it asks \"Just to clarify: you are fully paid up. Is that right?\"), and on yes call finish_something_good with `result`; on no, let them change it and call again. status block: say `message` and let them try again. status crisis: stop the ritual and share `message`.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        text: { type: "string", maxLength: 2000, description: "Their perfect result, exactly as they said or typed it." },
+        country: { type: "string", description: "Optional ISO country code for local crisis support." },
+      },
+      required: ["text"],
+      additionalProperties: false,
+    },
+    outputSchema: {
+      type: "object",
+      properties: {
+        status: { type: "string", enum: ["confirm", "block", "crisis"] },
+        ok: { type: "boolean" },
+        message: { type: "string", description: "For block and crisis: what to show or say." },
+        result: { type: "string", description: "For confirm: the positive perfect result, first person. Pass to finish_something_good after a yes." },
+        changed: { type: "boolean", description: "True when the wording differs from what they gave." },
+        confirm: { type: "string", description: "The confirm question, e.g. \"Just to clarify: you are fully paid up. Is that right?\"" },
+        yes: { type: "string" },
+        change: { type: "string" },
+        ssml: { type: "string" },
+        text: { type: "string" },
+        steps: { type: "array", items: { type: "object" } },
+        support: { type: "object" },
+      },
+      required: ["status", "ok", "message"],
+    },
+    annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: false, openWorldHint: true },
+  },
+  {
     name: "suggest_spelling",
     title: "Suggest spelling fixes",
     description:
@@ -201,7 +236,7 @@ function toolResult(session) {
   return { content: [{ type: "text", text: session.text }], structuredContent: session, isError: false };
 }
 
-function callTool(params) {
+async function callTool(params) {
   const name = params?.name;
   const args = params?.arguments ?? {};
   if (typeof name !== "string") throw new RpcError(-32602, "Missing tool name");
@@ -223,6 +258,11 @@ function callTool(params) {
       const result = { ...checkPerfectResult(args.text, args.country), maxChars: MAX_CHARS };
       return { content: [{ type: "text", text: result.message || "Looks good." }], structuredContent: result, isError: false };
     }
+    case "turn_around_perfect_result": {
+      const result = await turnAround(args.text ?? "", args.country);
+      const say = result.status === "confirm" ? result.confirm : result.message;
+      return { content: [{ type: "text", text: say }], structuredContent: result, isError: false };
+    }
     case "suggest_spelling": {
       const result = suggestSpelling(args.text);
       return {
@@ -238,7 +278,7 @@ function callTool(params) {
   }
 }
 
-export function handleRpc(msg) {
+export async function handleRpc(msg) {
   const { id, method, params } = msg;
   switch (method) {
     case "initialize": {
@@ -255,7 +295,7 @@ export function handleRpc(msg) {
     case "tools/list":
       return ok(id, { tools: TOOLS });
     case "tools/call":
-      return ok(id, callTool(params));
+      return ok(id, await callTool(params));
     case "resources/list":
       return ok(id, {
         resources: [
@@ -286,7 +326,7 @@ function allowedOrigin(origin, env = process.env) {
   const list = (env.ALLOWED_ORIGINS ?? "").split(",").map((s) => s.trim()).filter(Boolean);
   const allowed = list.length ? list : DEFAULT_ORIGINS;
   if (allowed.includes(origin)) return true;
-  // This server's own pages, and GoodDayNight preview deployments on Vercel
+  // GoodDayNight preview deployments on Vercel
   return /^https:\/\/(alexagood[a-z0-9-]*|[a-z0-9-]+-gooddaynightgit)\.vercel\.app$/.test(origin);
 }
 
@@ -310,7 +350,7 @@ const json = (status, payload, extra = {}) => ({
 });
 
 /** Handle one HTTP request. `request` is { method, headers, body } where body is a string. */
-export function handleHttp(request, env = process.env) {
+export async function handleHttp(request, env = process.env) {
   const method = (request.method ?? "GET").toUpperCase();
   const h = lower(request.headers);
   const origin = h.origin;
@@ -343,7 +383,7 @@ export function handleHttp(request, env = process.env) {
   if (!("method" in msg) || msg.id === undefined) return { status: 202, headers: c, body: "" };
 
   try {
-    return json(200, handleRpc(msg), c);
+    return json(200, await handleRpc(msg), c);
   } catch (err) {
     const code = err instanceof RpcError ? err.code : -32603;
     const message = err instanceof RpcError ? err.message : "Internal error";
