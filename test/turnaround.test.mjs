@@ -95,3 +95,14 @@ test("replies are parsed safely", () => {
   assert.equal(parseReply("sorry"), null);
   assert.equal(parseReply('{"status":"ok","result":""}'), null);
 });
+
+test("the perfect result reads in the first person all the way through", async () => {
+  const { firstPerson, affirm } = await import("../src/script.mjs");
+  assert.equal(
+    affirm("I have a big beautiful smile with all my teeth fixed at the dainfern dentist, paid up by you via absa eft"),
+    "I have a big beautiful smile with all my teeth fixed at the dainfern dentist, paid up by me via absa eft.",
+  );
+  assert.equal(firstPerson("You are happy and your home is warm"), "I am happy and my home is warm");
+  assert.equal(firstPerson("Thank you. You have enough"), "Thank you. I have enough");
+  assert.equal(firstPerson("My family is proud of you"), "My family is proud of me");
+});

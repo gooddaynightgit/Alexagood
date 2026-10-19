@@ -106,6 +106,39 @@ export function reflect(raw) {
   return swaps.reduce((t, [from, to]) => t.replace(from, to), lowered);
 }
 
+/**
+ * Their perfect result always reads in the first person: "paid up by you" -> "paid up by me",
+ * "you are happy" -> "I am happy", "your smile" -> "my smile". "Thank you" stays as it is.
+ */
+export function firstPerson(raw) {
+  let text = String(raw ?? "").replace(/[\u2018\u2019]/g, "'");
+  const keep = [];
+  text = text.replace(/\bthank[ -]you\b/gi, (m) => `\uE000${keep.push(m) - 1}\uE001`);
+  const cap = (m, to) => (/^[A-Z]/.test(m) ? to[0].toUpperCase() + to.slice(1) : to);
+  const swaps = [
+    [/\byourself\b/gi, "myself"],
+    [/\byours\b/gi, "mine"],
+    [/\byour\b/gi, "my"],
+    [/\byou're\b/gi, "I'm"],
+    [/\byou've\b/gi, "I've"],
+    [/\byou'll\b/gi, "I'll"],
+    [/\byou'd\b/gi, "I'd"],
+    [/\byou are\b/gi, "I am"],
+    [/\byou were\b/gi, "I was"],
+    [/\bare you\b/gi, "am I"],
+  ];
+  for (const [from, to] of swaps) text = text.replace(from, (m) => cap(m, to));
+  // What's left: "I" when a verb follows ("you have", "you feel"), otherwise "me" ("by you", "with you").
+  const verbNext = /^\s+(?:have|had|feel|felt|love|live|own|enjoy|get|got|can|could|will|would|should|do|did|know|see|walk|smile|wake|sleep|pay|paid|earn|make|made|go|went|am|keep|hold|share|take|took|give|gave|receive|received|run|drive|work|travel|laugh|breathe|[a-z]+ed)\b/i;
+  text = text.replace(/\byou\b/gi, (m, at, whole) => {
+    const after = whole.slice(at + m.length);
+    const before = whole.slice(0, at);
+    const startsSentence = /(^|[.!?]\s*)$/.test(before);
+    return startsSentence || verbNext.test(after) ? "I" : cap(m, "me");
+  });
+  return text.replace(/\uE000(\d+)\uE001/g, (_m, i) => keep[Number(i)]);
+}
+
 export const thankYou = (named) => `Thank you. Something good is about to happen with ${reflect(named)}.`;
 
 // ---- sessions ---------------------------------------------------------------
@@ -120,7 +153,7 @@ export function start(focus) {
  * "i am happy and grateful i'm living in my own home" -> "I am happy and grateful I'm living in my own home."
  */
 export function affirm(raw) {
-  const sentences = String(raw ?? "")
+  const sentences = firstPerson(raw)
     .split(/\n+/)
     .map((t) => t.trim().replace(/\s+/g, " ").replace(/…+$/, "").replace(/[.!?,;:]+$/, ""))
     .filter(Boolean)
