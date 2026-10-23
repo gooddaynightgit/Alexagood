@@ -97,7 +97,7 @@ export const TOOLS = [
     name: "finish_something_good",
     title: "Finish Something Good",
     description:
-      "After the person has said their perfect result, pass their words here. Returns one closing card showing 'Thank you.', their perfect result in their own first-person words, and 'Something good is about to happen.' Aloud, only 'Thank you.' … 'Something good is about to happen.' is said. Speak the returned ssml.",
+      "After the person has said their perfect result, pass their words here. Returns one closing card showing 'Thank you.', their perfect result in their own first-person words, and 'Something good is happening.' Aloud, only 'Thank you.' … 'Something good is happening.' is said. Speak the returned ssml.",
     inputSchema: {
       type: "object",
       properties: {
@@ -110,7 +110,7 @@ export const TOOLS = [
         gentleEnd: {
           type: "boolean",
           description:
-            "True after a third 'no' at the confirm step: closes with 'Thank you. Something good is about to happen.' without their words. `named` is then not needed.",
+            "True after a third 'no' at the confirm step: closes with 'Thank you. Something good is happening.' without their words. `named` is then not needed.",
         },
       },
       additionalProperties: false,

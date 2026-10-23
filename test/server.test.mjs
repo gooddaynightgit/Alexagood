@@ -56,18 +56,18 @@ test("finish is one card: thank you, their perfect result in their words, someth
     arguments: { named: "i am happy and grateful i'm living in my own home\nI have the money to travel" },
   })).result;
   assert.equal(r.structuredContent.steps.length, 1);
-  assert.match(r.structuredContent.ssml, /Thank you\.<\/prosody><break time="2500ms"\/><prosody rate="slow">Something good is about to happen\.<\/prosody>/);
+  assert.match(r.structuredContent.ssml, /Thank you\.<\/prosody><break time="2500ms"\/><prosody rate="slow">Something good is happening\.<\/prosody>/);
   assert.doesNotMatch(r.structuredContent.ssml, /living in my own home/);
   assert.equal(
     r.content[0].text,
-    "Thank you. I am happy and grateful I'm living in my own home. I have the money to travel. Something good is about to happen.",
+    "Thank you. I am happy and grateful I'm living in my own home. I have the money to travel. Something good is happening.",
   );
 });
 
 test("gentle end closes without their words", async () => {
   const r = (await rpc(30, "tools/call", { name: "finish_something_good", arguments: { gentleEnd: true } })).result;
   assert.equal(r.isError, false);
-  assert.equal(r.content[0].text, "Thank you. Something good is about to happen.");
+  assert.equal(r.content[0].text, "Thank you. Something good is happening.");
 });
 
 test("finish without words asks gently instead", async () => {

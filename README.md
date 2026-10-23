@@ -4,7 +4,7 @@
 
 Some days it's hard to feel grateful. Something Good starts there. You tell Alexa what you're dealing with: a challenge, a situation, something missing, or something you want to change. Alexa guides one slow breath, then says your own words back to you:
 
-> "Thank you. I am living in my own home. Something good is about to happen."
+> "Thank you. I am living in my own home. Something good is happening."
 
 It never pretends the problem is solved. It helps you hold it with a little more hope. About two minutes, voice only.
 
@@ -29,7 +29,7 @@ Built for the [Build, Ship, Shape Amazon Developer Hackathon](https://amazonappd
 | Tool | Input | Returns |
 |---|---|---|
 | `start_something_good` | optional `focus`: challenge, situation, missing, change, else | Welcome, one slow breath (in 4s, hold 2s, out 7s), then the question. |
-| `finish_something_good` | `named`: their perfect result (or `gentleEnd: true` after a third "no" at the confirm step) | One line: "Thank you.", their perfect result in their own words, "Something good is about to happen." |
+| `finish_something_good` | `named`: their perfect result (or `gentleEnd: true` after a third "no" at the confirm step) | One line: "Thank you.", their perfect result in their own words, "Something good is happening." |
 | `turn_around_perfect_result` | `text`, optional `country` | Every rule below, then Amazon Nova (Bedrock) rewrites it to be positive and clear in their own words ("I am debt free" → "I am fully paid up."). Returns `confirm` with the question to ask ("Just to clarify: you are fully paid up. Is that right?"), or `block` / `crisis`. |
 | `check_perfect_result` | `text` | ok / nudge / block / crisis, with a gentle message. Blocks swearing, junk, personal details, too short or long; nudges negative wording; crisis words get the SADAG helpline. |
 | `suggest_spelling` | `text` | The corrected text and each change, for the person to accept or not. |

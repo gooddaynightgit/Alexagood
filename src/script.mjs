@@ -6,7 +6,7 @@
 //   text  -> plain text, for reading or for an agent to paraphrase from
 
 export const NAME = "Something Good";
-export const TAGLINE = "Something good is about to happen.";
+export const TAGLINE = "Something good is happening.";
 
 /** Breath timing in milliseconds. The long out-breath is the letting go. */
 export const BREATH_MS = { in: 4000, hold: 2000, out: 7000 };
@@ -69,7 +69,7 @@ const NAMING = {
 
 export const PERFECT_RESULT = "Your perfect result:";
 
-export const CLOSE = "It's going to be alright. All is well. Something good is about to happen.";
+export const CLOSE = "It's going to be alright. All is well. Something good is happening.";
 
 /** Take your time, name it, turn it around, then say the perfect result. Alexa then listens. */
 export function question(focus) {
@@ -139,7 +139,7 @@ export function firstPerson(raw) {
   return text.replace(/\uE000(\d+)\uE001/g, (_m, i) => keep[Number(i)]);
 }
 
-export const thankYou = (named) => `Thank you. Something good is about to happen with ${reflect(named)}.`;
+export const thankYou = (named) => `Thank you. Something good is happening with ${reflect(named)}.`;
 
 // ---- sessions ---------------------------------------------------------------
 
@@ -162,14 +162,14 @@ export function affirm(raw) {
   return sentences.join(" ").slice(0, 600);
 }
 
-/** Second half: one card. Thank you, their perfect result in their own words, something good is about to happen. */
+/** Second half: one card. Thank you, their perfect result in their own words, something good is happening. */
 export function finish(named) {
   const result = affirm(named);
   const text = result
-    ? `Thank you. ${result} Something good is about to happen.`
-    : "Thank you. Something good is about to happen.";
-  // The card shows everything; Alexa says only "Thank you." … "Something good is about to happen."
-  return pack([{ ...line(text, RATE.slow, 0), speak: ["Thank you.", "Something good is about to happen."], speakPauseMs: 2500 }]);
+    ? `Thank you. ${result} Something good is happening.`
+    : "Thank you. Something good is happening.";
+  // The card shows everything; Alexa says only "Thank you." … "Something good is happening."
+  return pack([{ ...line(text, RATE.slow, 0), speak: ["Thank you.", "Something good is happening."], speakPauseMs: 2500 }]);
 }
 
 export function breathOnly(count) {
