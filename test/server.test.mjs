@@ -11,7 +11,7 @@ test("initialize negotiates the latest protocol", async () => {
   const r = (await rpc(1, "initialize", { protocolVersion: LATEST, capabilities: {}, clientInfo: { name: "t", version: "1" } }));
   assert.equal(r.result.protocolVersion, "2025-11-25");
   assert.ok(r.result.capabilities.tools);
-  assert.match(r.result.instructions, /not grateful/);
+  assert.match(r.result.instructions, /not feeling good about/);
 });
 
 test("unknown protocol version from client falls back to latest", async () => {
@@ -35,18 +35,18 @@ test("start returns ssml with real breaks and the question", async () => {
   assert.match(r.structuredContent.ssml, /^<speak>/);
   assert.match(r.structuredContent.ssml, /<break time="4000ms"\/>/);
   assert.match(r.structuredContent.ssml, /rate="x-slow">just let it go\./);
-  assert.match(r.content[0].text, /not grateful for/);
+  assert.match(r.content[0].text, /not feeling good about/);
   assert.doesNotMatch(r.content[0].text, /together/i);
 });
 
 test("start asks the question for what they chose", async () => {
   const r = (await rpc(8, "tools/call", { name: "start_something_good", arguments: { focus: "missing" } })).result;
-  assert.match(r.content[0].text, /Consider what is missing in your life, that you are not grateful for\./);
-  assert.match(r.content[0].text, /change what is missing\. Turn it around\./);
-  assert.match(r.content[0].text, /Turn it around\. What would you like it to be\?\nYour perfect result:$/);
+  assert.match(r.content[0].text, /Consider what is missing in your life, that you are not feeling good about\./);
+  assert.match(r.content[0].text, /change what is missing\. Flip it\./);
+  assert.match(r.content[0].text, /Flip it\. What would you like it to be\?\nYour perfect result:$/);
   assert.equal(r.structuredContent.steps.filter((x) => x.group === "ask").length, 4);
   const open = (await rpc(9, "tools/call", { name: "start_something_good", arguments: { focus: "nonsense" } })).result;
-  assert.match(open.content[0].text, /Consider what it is that you are not grateful for/);
+  assert.match(open.content[0].text, /Consider what it is that you are not feeling good about/);
   assert.doesNotMatch(open.content[0].text, /no rush/);
 });
 

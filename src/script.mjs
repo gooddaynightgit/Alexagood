@@ -18,7 +18,7 @@ const line = (text, rate = RATE.slow, pauseMs = 700, phase) => ({ text, rate, pa
 const ask = (text, pauseMs) => ({ ...line(text, RATE.slow, pauseMs), group: "ask" });
 
 /** The welcome: three lines on one screen, a pause between each, the last one said with excitement (shown in italics). */
-const WELCOME = ["Welcome to Something Good.", "This is the place to name what you're not grateful for.", "Then turn it around."];
+const WELCOME = ["Welcome to Something Good.", "This is the place to name what you're not feeling good about.", "Then flip it."];
 export const OPENING = [
   {
     ...line(WELCOME.join("\n"), RATE.normal, 1200),
@@ -46,24 +46,24 @@ export const FOCUS = ["challenge", "situation", "missing", "change", "else"];
 /** "Consider…" and "turn it around" lines, shaped by what they chose. */
 const NAMING = {
   challenge: {
-    consider: "Consider what is the challenge that you are not grateful for in your life.",
-    turn: "Right now, at this moment in time, change your challenge. Turn it around.",
+    consider: "Consider what is the challenge that you are not feeling good about in your life.",
+    turn: "Right now, at this moment in time, change your challenge. Flip it.",
   },
   situation: {
-    consider: "Consider what is the situation that you are not grateful for in your life.",
-    turn: "Right now, at this moment in time, change your situation. Turn it around.",
+    consider: "Consider what is the situation that you are not feeling good about in your life.",
+    turn: "Right now, at this moment in time, change your situation. Flip it.",
   },
   missing: {
-    consider: "Consider what is missing in your life, that you are not grateful for.",
-    turn: "Right now, at this moment in time, change what is missing. Turn it around.",
+    consider: "Consider what is missing in your life, that you are not feeling good about.",
+    turn: "Right now, at this moment in time, change what is missing. Flip it.",
   },
   change: {
-    consider: "Consider what you want to change, that you are not grateful for in your life.",
-    turn: "Right now, at this moment in time, change it. Turn it around.",
+    consider: "Consider what you want to change, that you are not feeling good about in your life.",
+    turn: "Right now, at this moment in time, change it. Flip it.",
   },
   else: {
-    consider: "Consider what it is that you are not grateful for in your life.",
-    turn: "Right now, at this moment in time, change it. Turn it around.",
+    consider: "Consider what it is that you are not feeling good about in your life.",
+    turn: "Right now, at this moment in time, change it. Flip it.",
   },
 };
 

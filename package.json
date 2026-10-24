@@ -1,7 +1,7 @@
 {
   "name": "alexagood",
   "version": "1.0.0",
-  "description": "Something Good: an Alexa+ MCP server and Agent Skill. Name what you're not grateful for.",
+  "description": "Something Good: an Alexa+ MCP server and Agent Skill. Name what you're not feeling good about.",
   "type": "module",
   "license": "MIT",
   "engines": { "node": ">=20" },
