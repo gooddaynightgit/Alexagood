@@ -29,7 +29,7 @@ function skill() {
 }
 
 const INSTRUCTIONS = [
-  `${NAME} guides someone through naming what they're not grateful for, then giving thanks as if something good is already on its way.`,
+  `${NAME} guides someone through naming what they're not feeling good about, then giving thanks as if something good is already on its way.`,
   "Call start_something_good first and speak its ssml exactly, then listen. When they answer, call turn_around_perfect_result with their words and speak its ssml, which asks them to confirm a positive version. On yes, call finish_something_good with its result and speak that ssml exactly.",
   "Never rush, never skip the breaks, never claim their problem is solved, never breathe 'together' with them.",
   `The full guide is the resource ${SKILL_URI}.`,

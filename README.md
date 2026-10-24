@@ -1,6 +1,6 @@
 # Something Good
 
-**Name what you're not grateful for.**
+**Name what you're not feeling good about.**
 
 Some days it's hard to feel grateful. Something Good starts there. You tell Alexa what you're dealing with: a challenge, a situation, something missing, or something you want to change. Alexa guides one slow breath, then says your own words back to you:
 

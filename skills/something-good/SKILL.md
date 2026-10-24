@@ -1,11 +1,11 @@
 ---
 name: something-good
-description: Guide someone, by voice, to name what they're not grateful for (a challenge, a situation, something missing, or something they want to change), breathe slowly, turn it around into their perfect result, and hear "Thank you. [their perfect result]. Something good is happening." Use when someone says they can't think of anything to be grateful for, is struggling, or asks for Something Good.
+description: Guide someone, by voice, to name what they're not feeling good about (a challenge, a situation, something missing, or something they want to change), breathe slowly, flip it into their perfect result, and hear "Thank you. [their perfect result]. Something good is happening." Use when someone says they can't think of anything to be grateful for, is struggling, or asks for Something Good.
 ---
 
 # Something Good
 
-A short voice ritual. The person names what they're **not** grateful for after one slow guided breath, then you give thanks for their situation as if something good is already on its way. It never pretends the problem is solved.
+A short voice ritual. The person names what they're **not** feeling good about after one slow guided breath, then you give thanks for their situation as if something good is already on its way. It never pretends the problem is solved.
 
 ## Tools (MCP server `something-good`)
 
@@ -33,7 +33,7 @@ The `ssml` holds the timed silences and slow pace. Do not summarise it, shorten 
 
 ## Wording rules
 
-- Keep the phrase **"not grateful for"**. It is the point.
+- Keep the phrase **"not feeling good about"**. It is the point.
 - Never say "together", "with me" about breathing. You guide; you don't breathe.
 - Never say the problem is solved, fixed or gone. Close with "Something good is happening."
 - Their perfect result is always positive, uplifting and makes sense before the closing card. Keep their meaning and as many of their own words as possible; only `turn_around_perfect_result` rewords it, and they always confirm it first.
@@ -52,8 +52,8 @@ If they mention wanting to harm themselves or not wanting to be alive, stop the 
 
 If the tools are unavailable, say this, slowly, with real pauses:
 
-1. "Welcome to Something Good." (pause) "This is the place to name what you're not grateful for." (pause) "Then turn it around." (said with excitement)
+1. "Welcome to Something Good." (pause) "This is the place to name what you're not feeling good about." (pause) "Then flip it." (said with excitement)
 2. "Breathe in slowly…" (4s) — "Hold it gently…" (2s) — "Slowly release… just let it go." (7s)
-3. "Take your time." — "Consider what is the challenge that you are not grateful for in your life." — "Right now, at this moment in time, change your challenge. Turn it around. What would you like it to be?" — "Your perfect result:" — listen. (Say "situation", "what is missing", or "it" in place of "challenge" to match what they chose.)
+3. "Take your time." — "Consider what is the challenge that you are not feeling good about in your life." — "Right now, at this moment in time, change your challenge. Flip it. What would you like it to be?" — "Your perfect result:" — listen. (Say "situation", "what is missing", or "it" in place of "challenge" to match what they chose.)
 4. Turn it positive if needed, keeping their words, and ask: "Just to clarify: you [their perfect result]. Is that right?" On yes, go on.
 5. Show "Thank you. [their perfect result]. Something good is happening." Say only: "Thank you." (pause) "Something good is happening."

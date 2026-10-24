@@ -9,7 +9,7 @@ import { isKnownWord } from "./spell.mjs";
 export const MODEL = "us.amazon.nova-2-lite-v1:0";
 export const TIMEOUT_MS = 6000;
 
-export const SYSTEM = `You help with Something Good, a gentle gratitude ritual. The person named what they are not grateful for, then wrote their "perfect result": how they want life to be, said as if already true.
+export const SYSTEM = `You help with Something Good, a gentle gratitude ritual. The person named what they are not feeling good about, then wrote their "perfect result": how they want life to be, said as if already true.
 
 Rewrite their perfect result so that:
 1. It is positive and uplifting. It says what they DO have or feel. It contains NONE of these kinds of words: not, no, never, nothing, don't, can't, won't, without, anymore, free (as in free of), debt, broke, poor, sick, ill, pain, hurt, alone, lonely, stress, stressed, worry, anxious, afraid, scared, fail, lose, lost, hate, angry, stop, quit, problem, struggle.
